@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>music-app</title>
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:700|Roboto:300,400,700|Material+Icons" rel="stylesheet">
+  <% if (htmlWebpackPlugin.options.nodeModules) { %>
+    <!-- Add `node_modules/` to global paths so `require` works properly in development -->
+    <script>
+      require('module').globalPaths.push('<%= htmlWebpackPlugin.options.nodeModules.replace(/\\/g, '\\\\') %>')
+    </script>
+  <% } %>
+</head>
+
+<body>
+  <div id="app" :class="{scrolled: scrollPosition > 5, sidenavexpanded: sidenav == true }">
+
+    <!-- Top Bar -->
+    <header class="top-bar">
+      <div class="top left mobile-hidden">
+        <i class="toggle material-icons" v-on:click="sidenav = !sidenav">menu</i>
+        <h3 v-if="scrollPosition < 340" class="branding">Music App</h3>
+        <h3 v-else class="branding">Ellie Goulding</h3>
+      </div>
+      <div class="top center">
+        <i class="material-icons search-icon">search</i>
+        <input type="text" placeholder="Search" />
+      </div>
+      <div class="top right">
+        <img src="/static/images/avatar.jpg" alt="Avatar" class="user-avatar mobile-hidden" />
+        <div class="user-name mobile-hidden">Leon S.</div>
+        <i class="toggle material-icons" v-on:click="dropdown = !dropdown">keyboard_arrow_down</i>
+        <div class="dropdown user" v-if="dropdown">
+          <div class="dropdown-item"><i class="material-icons">account_circle</i> My Account</div>
+          <div class="dropdown-item"><i class="material-icons">power_settings_new</i> Logout</div>
+        </div>
+      </div>
+    </header>
+    <!-- End Top Bar -->
+
+    <!-- Sidenav -->
+    <nav class="sidenav">
+      <ul>
+        <li><i class="material-icons">home</i><a>Home</a></li>
+        <li class="active"><i class="material-icons">book</i><router-link to="/artist">Browse</router-link></li>
+        <li><i class="material-icons">settings_input_antenna</i><a>Radio</a></li>
+        <li><i class="material-icons">library_music</i><a>My Music</a></li>
+        <li><i class="material-icons">playlist_play</i><a>My Playlists</a></li>
+        <li><i class="material-icons">settings</i><a>Settings</a></li>
+      </ul>
+    </nav>
+    <!-- End Sidenav -->
+
+    <!-- Router View -->
+    <router-view></router-view>
+    <!-- End Router View -->
+
+    <!-- Bottom Bar -->
+    <footer class="bottom-bar">
+      <div class="bottom left mobile-hidden">
+        <img src="/static/images/cover4.png" alt="First Time" />
+        <div class="currently-playing">
+          <div class="title"><a>First Time</a></div>
+          <div class="artist"><a>Kygo</a><a>Ellie Goulding</a></div>
+        </div>
+      </div>
+      <div class="bottom center">
+        <i class="shuffle material-icons" v-tooltip="{ content: 'Shuffle', container: '.tooltip-container' }">shuffle</i>
+        <i class="skip material-icons">skip_previous</i>
+        <i v-if="playing == false" @click="playing = true" class="toggle play material-icons">play_circle_filled</i>
+        <i v-if="playing == true" @click="playing = false" class="toggle pause material-icons">pause_circle_filled</i>
+        <i class="skip material-icons">skip_next</i>
+        <i class="repeat material-icons" v-tooltip="{ content: 'Repeat', container: '.tooltip-container' }">repeat</i>
+      </div>
+      <div class="bottom right mobile-hidden">
+        <i v-if="volume == 0" class="volume material-icons">volume_mute</i>
+        <i v-if="volume <= 50 && volume > 0" class="volume material-icons">volume_down</i>
+        <i v-if="volume > 50" class="volume material-icons">volume_up</i>
+        <vue-slider ref="slider" v-model="volume" width="100px" tooltip="false"></vue-slider>
+        <i class="cast material-icons" v-tooltip="{ content: 'Cast', container: '.tooltip-container' }">cast</i>
+        <i class="queue material-icons" v-tooltip="{ content: 'Queue', container: '.tooltip-container' }">queue_music</i>
+      </div>
+    </footer>
+    <!-- End Bottom Bar -->
+
+    <div class="tooltip-container">
+    </div>
+
+  </div>
+  <script>
+    if (process.env.NODE_ENV !== 'development') window.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
+  </script>
+
+  <!-- webpack builds are automatically injected -->
+</body>
+
+</html>
