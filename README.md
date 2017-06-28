@@ -1,4 +1,4 @@
-# music-app
+# music-app-electron
 
 > Frontend for Music-Streaming app built with Webpack and Vue.js.
 
