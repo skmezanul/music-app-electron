@@ -13,5 +13,4 @@ Vue.component('vue-slider', vueSlider)
 import VTooltip from 'v-tooltip'
 Vue.use(VTooltip)
 import inViewportDirective from 'vue-in-viewport-directive'
-inViewportDirective.defaults.top = -150
 Vue.directive('in-viewport', inViewportDirective)

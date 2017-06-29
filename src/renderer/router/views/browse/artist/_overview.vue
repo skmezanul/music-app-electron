@@ -9,7 +9,7 @@
   <section class="page-section" v-in-viewport.once>
     <div class="section-header">
       <h4 class="section-title">Singles</h4>
-      <div class="section-actions" @click=" collapsed = !collapsed">more</div>
+      <div class="section-actions" @click=" collapsed = !collapsed">show more</div>
     </div>
     <div class="section-items-container" :class="{'is-collapsed' : collapsed }">
       <sectionitem v-for="item of singles" :key="item.title" :image="item.image" :title="item.title" :subtitle="item.subtitle"></sectionitem>

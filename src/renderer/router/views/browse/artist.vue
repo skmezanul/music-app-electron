@@ -50,24 +50,16 @@
     --main-bg-color: #1A1D2C;
     --shadow-color: rgba(0, 0, 0, 0.2);
 }
-::selection {
-    background-color: transparent;
-}
 ::-webkit-scrollbar {
-    width: 3px;
-    height: 3px;
-    &-track {
-        background-color: var(--dark-blue);
-    }
-    &-thumb {
-        background-color: #fff;
-    }
+    width: 0;
+    height: 0;
 }
 body {
     font-family: 'Roboto', sans-serif;
     letter-spacing: 1px;
     background-color: var(--main-bg-color);
     color: #fff;
+    -webkit-user-select: none;
 }
 ol,
 ul {
@@ -158,10 +150,8 @@ a {
                 border-radius: 3px;
                 transition: all 0.3s ease;
                 letter-spacing: 1px;
-                &::selection {
-                    background-color: var(--dark-blue-transparent);
-                }
-                &::-webkit-input-placeholder {
+                 &::-webkit-input-placeholder,
+                -webkit-user-select:text {
                     color: rgba(255,255,255,0.5);
                 }
                 &:focus {
@@ -332,7 +322,8 @@ nav {
     }
     &.sidenav {
         ul {
-            width: 65px;
+            width: 80px;
+            padding-top: 40px;
             position: fixed;
             left: 0;
             top: 0;
@@ -345,7 +336,7 @@ nav {
             li {
                 display: flex;
                 align-items: center;
-                padding: 20px;
+                padding: 20px 26px;
                 border-bottom: 1px solid var(--border-color);
                 transition: all 0.5s ease;
                 a {
@@ -620,7 +611,7 @@ nav {
 .bottom-bar,
 .main-container,
 .top-bar {
-    margin-left: 65px;
+    margin-left: 80px;
 }
 @media screen and (max-width: 955px) {
     .mobile-hidden {
