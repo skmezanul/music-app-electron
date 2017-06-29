@@ -43,7 +43,7 @@
     --dark-blue-transparent: rgba(12, 16, 27, 0.7);
     --border-color: rgba(255, 255, 255, 0.1);
     --top-bg-color: rgba(12, 16, 27, 0.2);
-    --inner-width: 60%;
+    --inner-width: 65%;
     @media screen and (max-width: 1500px) {
         --inner-width: 95%;
     }
