@@ -19,9 +19,10 @@ function createWindow () {
    */
   mainWindow = new BrowserWindow({
     height: 920,
-    width: 1380,
+    width: 1550,
     useContentSize: true,
-    titleBarStyle: 'hiddenInset'
+    titleBarStyle: 'hiddenInset',
+    backgroundColor: '#1A1D2C'
   })
 
   mainWindow.loadURL(winURL)
