@@ -1,5 +1,4 @@
 import { app, BrowserWindow } from 'electron'
-require('electron-debug')({showDevTools: true});
 /**
  * Set `__static` path to static files in production
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html
@@ -19,7 +18,7 @@ function createWindow () {
    */
   mainWindow = new BrowserWindow({
     height: 920,
-    width: 1550,
+    width: 1440,
     useContentSize: true,
     titleBarStyle: 'hiddenInset',
     backgroundColor: '#1A1D2C'
