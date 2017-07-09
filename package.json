@@ -47,7 +47,8 @@
     "vue-in-viewport-directive": "^1.1.4",
     "vue-parallaxy": "^1.0.3",
     "vue-router": "^2.7.0",
-    "vue-slider-component": "^2.3.3"
+    "vue-slider-component": "^2.3.3",
+    "vuex": "^2.3.1"
   },
   "devDependencies": {
     "babel-core": "^6.25.0",
@@ -82,8 +83,8 @@
     "vue-loader": "^13.0.0",
     "vue-style-loader": "^3.0.1",
     "vue-template-compiler": "^2.3.4",
-    "webpack": "^3.0.0",
-    "webpack-dev-server": "^2.5.0",
+    "webpack": "^3.1.0",
+    "webpack-dev-server": "^2.5.1",
     "webpack-hot-middleware": "^2.18.2"
   }
 }
