@@ -1,73 +1,78 @@
-export default [
+export default [{
+    path: '/artist/:id',
+    component: require('./views/artist/index.vue'),
+    children: [{
+        path: '',
+        name: 'overview',
+        meta: {
+          header: 'full'
+        },
+        component: require('./views/artist/_overview.vue')
+      },
+      {
+        path: 'concerts',
+        name: 'concerts',
+        meta: {
+          header: 'compact'
+        },
+        component: require('./views/artist/_concerts.vue')
+      },
+      {
+        path: 'playlists',
+        name: 'playlists',
+        meta: {
+          header: 'compact'
+        },
+        component: require('./views/artist/_playlists.vue')
+      },
+      {
+        path: 'feed',
+        name: 'feed',
+        meta: {
+          header: 'compact'
+        },
+        component: require('./views/artist/_feed.vue'),
+      },
+      {
+        path: 'similar',
+        name: 'similar',
+        meta: {
+          header: 'compact'
+        },
+        component: require('./views/artist/_similar.vue'),
+      },
+      {
+        path: 'information',
+        name: 'information',
+        meta: {
+          header: 'full'
+        },
+        component: require('./views/artist/_information.vue'),
+      }
+    ]
+  },
   {
-  path: '/artist',
-  component: require('./views/artist/index.vue'),
-  children: [{
+    path: '/album/:id',
+    component: require('./views/album/index.vue'),
+    children: [{
       path: '',
-      name: 'overview',
+      name: 'album',
       meta: {
-        header: 'full',
-        current: 'overview'
+        header: 'compact'
       },
-      components: {
-        default: require('./views/artist/_overview.vue')
-      }
-    },
-    {
-      path: 'concerts',
-      name: 'concerts',
+      component: require('./views/album/_album.vue'),
+    }]
+  },
+  {
+    path: '/playlist/:user/:id',
+    component: require('./views/playlist/index.vue'),
+    children: [{
+      path: '',
+      name: 'playlist',
       meta: {
-        header: 'compact',
-        current: 'concerts'
+        header: 'compact'
       },
-      components: {
-        default: require('./views/artist/_concerts.vue')
-      }
-    },
-    {
-      path: 'playlists',
-      name: 'playlists',
-      meta: {
-        header: 'compact',
-        current: 'playlists'
-      },
-      components: {
-        default: require('./views/artist/_playlists.vue')
-      }
-    },
-    {
-      path: 'feed',
-      name: 'feed',
-      meta: {
-        header: 'compact',
-        current: 'feed'
-      },
-      components: {
-        default: require('./views/artist/_feed.vue')
-      }
-    },
-    {
-      path: 'similar',
-      name: 'similar',
-      meta: {
-        header: 'compact',
-        current: 'similar'
-      },
-      components: {
-        default: require('./views/artist/_similar.vue')
-      }
-    },
-    {
-      path: 'information',
-      name: 'information',
-      meta: {
-        header: 'full',
-        current: 'information'
-      },
-      components: {
-        default: require('./views/artist/_information.vue')
-      }
-    }
-  ]
-}
+      component: require('./views/playlist/_playlist.vue'),
+    }]
+  }
 ];

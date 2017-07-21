@@ -1,36 +1,84 @@
 <template>
+<!--
 <div class="page-container">
   <section class="page-section tracks">
     <div class="section-header">
-      <h4>Top Tracks</h4>
+      <h1>Top Tracks</h1>
     </div>
-    <flextable></flextable>
+    <ol class="flex-table">
+    <flextable v-for="(item, index) in singles" :key="item.id" :image="item.image" :title="item.title" :subtitle="item.subtitle" :index="index"></flextable>
+    </ol>
   </section>
   <section class="page-section singles">
     <div class="section-header">
-      <h4>Singles</h4>
+      <h1>Singles</h1>
       <div class="section-actions" @click="collapsed = !collapsed">
         <span v-show="collapsed === true">Show More<i class="material-icons">keyboard_arrow_down</i></span><span v-show="collapsed === false">Show Less<i class="material-icons">keyboard_arrow_up</i></span>
       </div>
     </div>
     <div class="section-items-container" :class="{'is-collapsed' : collapsed }">
-      <sectionitem v-for="item in singles" type="album" :key="item.title" :image="item.image" :title="item.title" :subtitle="item.subtitle">
+      <sectionitem v-for="item in singles" type="album" :key="item.id" :image="item.image" :title="item.title" :subtitle="item.subtitle"></sectionitem>
       </sectionitem>
     </div>
   </section>
 </div>
+-->
+<div class="page-container">
+
+  <section class="page-section tracks">
+    <div class="section-header">
+      <h1>Top Tracks</h1>
+      <div class="section-actions">
+        <span>Show Less<i class="material-icons">keyboard_arrow_up</i></span>
+      </div>
+    </div>
+    <!--
+    <ol class="flex-table">
+      <flextable v-for="(track, index) in singles" :key="track.id" :image="track.image" :title="track.title" :artist="track.subtitle" :duration="track.duration" :index="index"></flextable>
+    </ol>
+    -->
+  </section>
+
+  <section class="page-section albums">
+    <div class="section-header">
+      <h1>Albums</h1>
+      <div class="section-actions">
+        <span>Show Less<i class="material-icons">keyboard_arrow_up</i></span>
+      </div>
+    </div>
+    <div class="section-items-container">
+      <sectionitem v-for="album in albums" :key="album.id" :type="album.type" :primaryID="album.id" :secondaryID="album.artists[0].id" :image="album.images[0].url" :title="album.name" :artist="album.artists"></sectionitem>
+    </div>
+  </section>
+
+</div>
 </template>
 <script>
+import spotifyApi from '../../../api/'
+
 export default {
   data() {
-    return this.$store.state.singles;
+    return {
+      tracks: {},
+      albums: {}
+    }
   },
-  computed: {
-    playing() {
-      return this.$store.state.playing;
-    },
-    collapsed() {
-      return this.$store.state.collapsed;
+  created() {
+    // fetch the data when the view is created and the data is
+    // already being observed
+    this.fetchData()
+  },
+  watch: {
+    // call again the method if the route changes
+    '$route': 'fetchData'
+  },
+  methods: {
+    fetchData() {
+      // Get this artist's albums from the api
+      spotifyApi.getArtistAlbums(this.$route.params.id, {
+          country: 'DE'
+        })
+        .then(response => this.albums = response.items)
     }
   }
 }

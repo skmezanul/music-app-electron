@@ -1,24 +1,28 @@
 <template>
 <div class="section-item" :class="type">
-  <div class="section-item-inner">
-    <div class="item-overlay" v-if="type === 'album'">
-      <div class="overlay-actions">
-        <i class="favorite material-icons">favorite</i>
-        <i v-if="playing === false" @click="playing = true" class="play material-icons">play_circle_outline</i>
-        <i v-if="playing === true" @click="playing = false" class="play material-icons">pause_circle_outline</i>
-        <i class="more material-icons">more_horiz</i>
+  <router-link :to="'/'+type+'/'+primaryID">
+    <div class="section-item-inner">
+      <div class="item-overlay" v-if="type != 'artist'">
+        <div class="overlay-actions">
+          <i class="favorite material-icons">favorite</i>
+          <i v-if="playing === false" @click="playing = true" class="play material-icons">play_circle_outline</i>
+          <i v-if="playing === true" @click="playing = false" class="play material-icons">pause_circle_outline</i>
+          <i class="more material-icons">more_horiz</i>
+        </div>
+      </div>
+      <div class="image-container">
+        <img :src="image" :alt="title" />
+      </div>
+      <div class="meta-container">
+        <div class="meta-container-inner">
+          <span>{{ title }}</span>
+          <div v-if="artist != null" class="artist-container">
+            <router-link v-for="item in artist" :to="'/'+item.type+'/'+item.id" :key="item.id">{{ item.name }}</router-link >
+          </div>
+        </div>
       </div>
     </div>
-    <div class="image-container">
-      <img :src="image" :alt="title" />
-    </div>
-    <div class="item-description">
-      <div class="item-description-inner">
-        <h4>{{title}}</h4>
-        <div class="item-subtitle"><a>{{subtitle}}</a></div>
-      </div>
-    </div>
-  </div>
+  </router-link>
 </div>
 </template>
 
@@ -31,8 +35,9 @@ export default {
   },
   props: [
     'type',
+    'primaryID',
     'title',
-    'subtitle',
+    'artist',
     'image'
   ]
 }
@@ -46,14 +51,15 @@ export default {
     flex-basis: 20%;
     max-width: 20%;
     @media screen and (max-width: 955px) {
-        flex-basis: 50%;
-        max-width: 50%;
+        flex-basis: 50% !important;
+        max-width: 50% !important;
     }
-    &.stage {
+    &.artist {
         flex-basis: 25%;
         max-width: 25%;
         .section-item-inner {
-            .item-description {
+            height: 300px;
+            .meta-container {
                 position: absolute;
                 bottom: 0;
                 top: 0;
@@ -63,23 +69,20 @@ export default {
                 justify-content: center;
                 align-items: flex-end;
                 background: linear-gradient(to top, rgba($black,0.7), rgba($black,0));
-                padding-bottom: 25px;
+                padding-bottom: 40px;
                 height: 100%;
-                .item-description-inner {
+                .meta-container-inner {
                     font-size: 1.3em;
                 }
             }
             .image-container {
-                height: 350px;
                 img {
                     filter: brightness(70%) contrast(110%);
-                    transition: filter 0.3s;
                     height: 100%;
                     width: auto;
                 }
             }
             &:hover {
-                cursor: pointer;
                 .image-container {
                     img {
                         filter: brightness(100%) contrast(100%);
@@ -88,10 +91,18 @@ export default {
             }
         }
     }
+    &.playlist {
+        .section-item-inner {
+            .meta-container {
+                padding: 20px 15px;
+            }
+        }
+    }
     .section-item-inner {
         display: flex;
-        position: relative;
+        justify-content: space-between;
         flex-direction: column;
+        position: relative;
         background-color: $blue;
         height: 100%;
         overflow: hidden;
@@ -102,6 +113,11 @@ export default {
             .item-overlay {
                 opacity: 1;
             }
+            .image-container {
+              img {
+                transform: scale(1.07);
+              }
+            }
         }
         .image-container {
             display: flex;
@@ -109,9 +125,11 @@ export default {
             align-items: center;
             width: 100%;
             height: auto;
+            overflow: hidden;
             img {
                 width: 100%;
                 height: auto;
+                transition: transform 0.7s, filter 0.3s;
             }
         }
         .item-overlay {
@@ -143,17 +161,18 @@ export default {
                 }
             }
         }
-        .item-description {
+        .meta-container {
             display: flex;
             justify-content: center;
             padding: 15px;
-            .item-description-inner {
+            .meta-container-inner {
                 z-index: 2;
                 overflow: hidden;
                 white-space: nowrap;
                 text-align: center;
+                text-overflow: ellipsis;
                 line-height: 1.4em;
-                .item-subtitle {
+                .artist-container {
                     a {
                         @include comma-separated(0.95em, 300);
                     }
