@@ -1,10 +1,10 @@
 <template>
-<div class="stage">
+<div class="stage" :class="{'with-cover': type === 'album' || type === 'playlist'}">
 
   <!--Background-->
   <div class="stage-background">
     <transition name="fade">
-      <parallax :speedFactor="0.3" v-show="$route.meta.header === 'full' || type === 'album' || type === 'playlist'">
+      <parallax :speedFactor="0.3">
         <img :src="image" :alt="title" />
       </parallax>
     </transition>
@@ -12,11 +12,15 @@
 
   <div class="stage-inner">
 
+
+    <div class="cover-container mobile-hidden" v-if="type === 'album' || type === 'playlist'">
+      <img :src="image" :alt="title" />
+    </div>
     <!--Content-->
     <div class="stage-container">
       <h2>{{ type }}</h2>
       <h1>{{ title }}</h1>
-      <div v-if="primaryinfo != null" class="info-container">
+      <div v-if="primaryinfo != null" class="info-container mobile-hidden">
         <a>{{ primaryinfo }}</a><a v-if="secondaryinfo != null">{{ secondaryinfo }}</a>
       </div>
       <div class="button-container">
@@ -69,6 +73,13 @@ export default {
     height: 550px;
     overflow: hidden;
 
+    &.with-cover {
+        .stage-inner {
+            flex-direction: row;
+            align-items: center;
+        }
+    }
+
     .stage-background {
         position: absolute;
         top: 0;
@@ -81,7 +92,9 @@ export default {
 
             img {
                 animation: zoomOut 0.7s 0.2s both;
+                will-change: filter;
                 filter: saturate(150%);
+                transition: filter 0.3s;
             }
         }
     }
@@ -100,12 +113,26 @@ export default {
         flex-direction: column;
         z-index: 996;
 
+        .cover-container {
+            height: 250px;
+            width: 250px;
+            min-width: 250px;
+            overflow: hidden;
+            border-radius: 10px;
+            margin-right: 35px;
+            box-shadow: $shadow;
+            img {
+                width: 100%;
+                height: auto;
+            }
+        }
+
         .stage-container {
             display: flex;
             flex-direction: column;
-            max-width: 80%;
 
             h1 {
+                will-change: font-size;
                 transition: font-size 0.3s;
                 font-size: 5.5em;
                 margin: 0 0 5px -5px;
@@ -124,7 +151,6 @@ export default {
 
                 .button-group {
                     display: flex;
-                    box-shadow: $shadow;
                     margin: 0 5px 10px 0;
                     border-radius: 5px;
                     overflow: hidden;
@@ -189,6 +215,13 @@ nav {
         margin-top: -250px;
 
         .stage {
+            .stage-background {
+                .Masthead {
+                    img {
+                        filter: saturate(200%) blur(20px);
+                    }
+                }
+            }
             .stage-inner {
                 .stage-container {
                     h1 {
