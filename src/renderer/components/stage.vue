@@ -20,8 +20,8 @@
     <div class="stage-container">
       <h2>{{ type }}</h2>
       <h1>{{ title }}</h1>
-      <div v-if="primaryinfo != null" class="info-container mobile-hidden">
-        <a>{{ primaryinfo }}</a><a v-if="secondaryinfo != null">{{ secondaryinfo }}</a>
+      <div v-if="primaryInfo != null" class="info-container mobile-hidden">
+        <a>{{ primaryInfo }}</a><a v-if="secondaryInfo != null">{{ secondaryInfo }}</a>
       </div>
       <div class="button-container">
         <div class="button-group">
@@ -54,8 +54,8 @@ export default {
     'navigation',
     'image',
     'title',
-    'primaryinfo',
-    'secondaryinfo'
+    'primaryInfo',
+    'secondaryInfo'
   ]
 }
 </script>
@@ -134,18 +134,20 @@ export default {
             h1 {
                 will-change: font-size;
                 transition: font-size 0.3s;
-                font-size: 5.5em;
-                margin: 0 0 5px -5px;
+                font-size: 5em;
+                margin: 5px 0 10px -5px;
                 text-transform: uppercase;
+                line-height: 0.95em;
             }
             .info-container {
+                margin-bottom: 5px;
                 a {
                     text-transform: uppercase;
                     @include comma-separated(1.2em, 400);
                 }
             }
             .button-container {
-                margin-top: 15px;
+                margin-top: 10px;
                 display: flex;
                 align-items: center;
 
@@ -218,7 +220,7 @@ nav {
             .stage-background {
                 .Masthead {
                     img {
-                        filter: saturate(200%) blur(20px);
+                        filter: saturate(300%) blur(20px);
                     }
                 }
             }
@@ -226,7 +228,7 @@ nav {
                 .stage-container {
                     h1 {
                         font-size: 3.5em;
-                        max-height: 130px;
+                        max-height: 108px;
                         overflow: hidden;
                     }
                 }
