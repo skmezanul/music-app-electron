@@ -63,10 +63,12 @@ body {
     color: $white;
     min-width: 611px;
     user-select: none;
+    -webkit-user-select: none;
 }
 
 input {
     user-select: text;
+    -webkit-user-select: text;
 }
 
 ol,
@@ -111,6 +113,26 @@ a {
     margin-top: 0;
     will-change: margin-top;
     transition: margin-top 0.3s;
+    &.stage-compact {
+        margin-top: -250px;
+
+        .stage {
+            .stage-background {
+                .Masthead {
+                    img {
+                        filter: saturate(300%) blur(20px);
+                    }
+                }
+            }
+            .stage-inner {
+                .stage-container {
+                    h1 {
+                        font-size: 3.5em;
+                    }
+                }
+            }
+        }
+    }
 }
 
 .page-container {
@@ -319,8 +341,6 @@ a {
 }
 @supports (backdrop-filter: blur(20px)) or (-webkit-backdrop-filter: blur(20px)) {
     .footer,
-    .header .search-active input,
-    .header .search-dropdown,
     .scrolled .header {
         background-color: rgba($dark-blue, 0.7) !important;
         backdrop-filter: saturate(200%) blur(20px);
@@ -332,6 +352,7 @@ a {
 .page-section,
 .stage-inner {
     width: $large-width;
+    max-width: 1440px;
     @media screen and (max-width: 1500px) {
         width: $small-width;
     }

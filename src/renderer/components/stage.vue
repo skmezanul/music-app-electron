@@ -21,9 +21,9 @@
       <h2>{{ type }}</h2>
       <h1>{{ title }}</h1>
       <div v-if="primaryInfo != null" class="info-container mobile-hidden">
-        <a>{{ primaryInfo }}</a><a v-if="secondaryInfo != null">{{ secondaryInfo }}</a>
+        <a v-html="primaryInfo"></a><a v-if="secondaryInfo != null">{{ secondaryInfo }}</a>
       </div>
-      <div class="button-container">
+      <div v-if="type != 'browse'" class="button-container">
         <div class="button-group">
           <a class="btn btn-accent"><i class="material-icons">play_circle_filled</i>Play All</a>
           <a v-if="type === 'artist'" class="btn"><i class="material-icons">add_circle</i>Follow</a>
@@ -71,7 +71,6 @@ export default {
     padding-top: 65px;
     min-height: 400px;
     height: 550px;
-    overflow: hidden;
 
     &.with-cover {
         .stage-inner {
@@ -86,6 +85,7 @@ export default {
         left: 0;
         right: 0;
         bottom: 0;
+        overflow: hidden;
 
         .Masthead {
             min-height: 100% !important;
@@ -95,6 +95,7 @@ export default {
                 will-change: filter;
                 filter: saturate(150%);
                 transition: filter 0.3s;
+                margin-top: -10%;
             }
         }
     }
@@ -135,19 +136,20 @@ export default {
                 will-change: font-size;
                 transition: font-size 0.3s;
                 font-size: 5em;
-                margin: 5px 0 10px -5px;
-                text-transform: uppercase;
-                line-height: 0.95em;
+                margin: 5px 0 0 -5px;
             }
             .info-container {
-                margin-bottom: 5px;
+                margin-top: 10px;
                 a {
                     text-transform: uppercase;
                     @include comma-separated(1.2em, 400);
+                    a {
+                        font-size: inherit;
+                    }
                 }
             }
             .button-container {
-                margin-top: 10px;
+                margin-top: 15px;
                 display: flex;
                 align-items: center;
 
@@ -172,7 +174,7 @@ export default {
 
 nav {
     &.subnav {
-        margin-top: 20px;
+        margin-top: 15px;
 
         ul {
             display: flex;
@@ -185,6 +187,8 @@ nav {
                     text-transform: uppercase;
                     transition: color 0.3s;
                     color: rgba($white, 0.5);
+                    font-weight: 300;
+                    font-size: 0.9em;
 
                     &.router-link-exact-active {
                         color: $white;
@@ -202,31 +206,6 @@ nav {
                     &:not(.router-link-exact-active):hover {
                         cursor: pointer;
                         color: rgba($white, 0.7);
-                    }
-                }
-            }
-        }
-    }
-}
-
-.main-container {
-    &.stage-compact {
-        margin-top: -250px;
-
-        .stage {
-            .stage-background {
-                .Masthead {
-                    img {
-                        filter: saturate(300%) blur(20px);
-                    }
-                }
-            }
-            .stage-inner {
-                .stage-container {
-                    h1 {
-                        font-size: 3.5em;
-                        max-height: 108px;
-                        overflow: hidden;
                     }
                 }
             }

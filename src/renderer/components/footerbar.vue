@@ -5,7 +5,7 @@
     <div class="currently-playing">
       <span class="title">{{ playing.item.name }}</span>
       <div class="artist-container">
-        <router-link v-for="artist in playing.item.artists" :key="artist.id" :to="'/artist/'+artist.id">{{ artist.name }}</router-link>
+        <a class="artist" v-for="artist in playing.item.artists" :key="artist.id" @click="toArtist(artist.type, artist.id)">{{ artist.name }}</a>
       </div>
     </div>
   </div>
@@ -22,7 +22,7 @@
     <i v-if="volume == 0" class="volume material-icons">volume_mute</i>
     <i v-if="volume <= 50 && volume > 0" class="volume material-icons">volume_down</i>
     <i v-if="volume > 50" class="volume material-icons">volume_up</i>
-    <slider ref="slider" v-model="volume" width="100px" tooltip="false"></slider>
+    <slider ref="slider" v-model="volume" width="100px" :bgStyle="bgStyle" :sliderStyle="sliderStyle" :processStyle="sliderStyle" tooltip="false"></slider>
     <i class="cast material-icons" v-tooltip="{ content: 'Cast', container: '.tooltip-container' }">cast</i>
     <i class="queue material-icons" v-tooltip="{ content: 'Queue', container: '.tooltip-container' }">queue_music</i>
   </div>
@@ -30,12 +30,19 @@
 </template>
 <script>
 import spotifyApi from '../api/'
+import router from '../router'
 
 export default {
   data() {
     return {
       volume: 50,
-      playing: {}
+      playing: {},
+      bgStyle: {
+        "backgroundColor": "#1A1D2C"
+      },
+      sliderStyle: {
+        "backgroundColor": "#ca2a59"
+      }
     }
   },
   created() {
@@ -49,6 +56,11 @@ export default {
     'volume': 'setVolume'
   },
   methods: {
+    toArtist(type, artistID) {
+      router.push({
+        path: '/' + type + '/' + artistID
+      })
+    },
     fetchData() {
       spotifyApi.getMyCurrentPlaybackState()
         .then(response => this.playing = response)
@@ -169,6 +181,7 @@ export default {
             .toggle {
                 font-size: 3.3em;
                 color: $white;
+                transition: transform 0.3s;
                 &:hover {
                     transform: scale(1.15);
                 }
