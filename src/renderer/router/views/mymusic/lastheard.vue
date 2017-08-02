@@ -18,10 +18,8 @@
         :type="lastheard.track.type"
         :image="lastheard.track.album.images[0].url"
         :title="lastheard.track.name"
-        :artist="lastheard.track.artists[0].name"
-        :artistID="lastheard.track.artists[0].id"
-        :album="lastheard.track.album.name"
-        :albumID="lastheard.track.album.id"
+        :artists="lastheard.track.artists"
+        :album="lastheard.track.album"
         :duration="lastheard.track.duration_ms"
         :index="index"
         ></flextable>

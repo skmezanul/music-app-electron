@@ -19,10 +19,8 @@
         :type="playlist.track.type"
         :image="playlist.track.album.images[0].url"
         :title="playlist.track.name"
-        :artist="playlist.track.artists[0].name"
-        :artistID="playlist.track.artists[0].id"
-        :album="playlist.track.album.name"
-        :albumID="playlist.track.album.id"
+        :artists="playlist.track.artists"
+        :album="playlist.track.album"
         :duration="playlist.track.duration_ms"
         :index="index"
         ></flextable>

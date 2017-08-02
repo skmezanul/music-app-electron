@@ -9,12 +9,12 @@
   <span v-if="index != null" class="index mobile-hidden">{{String("0" + (index+1)).slice(-2)}}</span>
   <div class="meta-container">
     <span>{{title}}</span>
-    <div v-if="artistID != null" class="artist">
-      <router-link :to="'/artist/'+artistID">{{ artist }}</router-link>
+    <div v-if="artists != null" class="artist-container">
+      <router-link v-for="artist in artists" :key="artist.id" :to="'/'+artist.type+'/'+artist.id">{{ artist.name }}</router-link>
     </div>
   </div>
-  <div v-if="albumID != null" class="album">
-    <router-link :to="'/album/'+albumID">{{ album }}</router-link>
+  <div v-if="album != null" class="album">
+    <router-link :to="'/'+album.type+'/'+album.id">{{ album.name }}</router-link>
   </div>
   <span class="duration">{{ formattedDuration }}</span>
   <i class="material-icons" v-tooltip="{ content: 'Add to playlist', container: '.tooltip-container' }">playlist_add</i>
@@ -33,10 +33,8 @@ export default {
     'index',
     'type',
     'title',
-    'artist',
-    'artistID',
+    'artists',
     'album',
-    'albumID',
     'duration',
     'image'
   ],
@@ -145,7 +143,7 @@ export default {
             @media screen and (max-width: 955px) {
                 padding: 0 15px;
             }
-            .artist {
+            .artist-container {
                 a {
                     @include comma-separated(1em, 300);
                 }
