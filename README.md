@@ -2,7 +2,8 @@
 
 > Music-Streaming app built with Electron, Webpack, Vue.js, Vuex and the Spotify api.
 
-![Showcase](static/images/showcase.jpg)
+![Showcase](static/images/showcase1.jpg)
+![Showcase](static/images/showcase2.jpg)
 
 ## How to setup dev environment
 
