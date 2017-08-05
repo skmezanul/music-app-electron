@@ -11,17 +11,24 @@
 
       <!--Search Dropdown-->
       <div class="search-dropdown" v-if="searchDropdown === true" v-on-clickaway="toggleSearch">
-        <search :searchQuery="searchQuery" :searchDropdown="searchDropdown"></search>
+        <search
+        :searchQuery="searchQuery"
+        :searchDropdown="searchDropdown"
+        ></search>
       </div>
 
     </div>
     <div class="top right">
-      <img :src="$store.state.currentUser.images[0].url" :alt="$store.state.currentUser.display_name" class="user-avatar mobile-hidden" />
-      <a href="" class="user-name mobile-hidden">{{ $store.state.currentUser.display_name }}</a>
-      <i class="toggle material-icons" @click="userDropdown = !userDropdown">keyboard_arrow_down</i>
+      <img
+      :src="$store.state.currentUser.images[0].url"
+      :alt="$store.state.currentUser.display_name"
+      class="user-avatar mobile-hidden"
+      />
+      <router-link to="/" class="user-name mobile-hidden">{{ $store.state.currentUser.display_name }}</router-link>
+      <i class="toggle material-icons" @click="toggleDropdown">keyboard_arrow_down</i>
 
       <!--User Dropdown-->
-      <ul class="dropdown" v-if="userDropdown">
+      <ul class="dropdown" v-if="userDropdown" v-on-clickaway="toggleDropdown">
         <li>My Account</li>
         <li>Settings</li>
         <li>Logout</li>
@@ -33,34 +40,37 @@
 </template>
 
 <script>
-import router from '../router'
+import router from '../router';
 import {
-  directive as onClickaway
+  directive as onClickaway,
 } from 'vue-clickaway';
 
 export default {
   directives: {
-    onClickaway: onClickaway,
+    onClickaway,
   },
   data() {
     return {
       userDropdown: false,
       searchDropdown: false,
-      searchQuery: ''
-    }
+      searchQuery: '',
+    };
   },
   methods: {
-    goBack: function() {
-      router.go(-1)
+    goBack() {
+      router.go(-1);
     },
-    goForward: function() {
-      router.go(1)
+    goForward() {
+      router.go(1);
     },
-    toggleSearch: function() {
-      this.searchDropdown = !this.searchDropdown
-    }
-  }
-}
+    toggleSearch() {
+      this.searchDropdown = !this.searchDropdown;
+    },
+    toggleDropdown() {
+      this.userDropdown = !this.userDropdown;
+    },
+  },
+};
 </script>
 
 <style lang="scss">
