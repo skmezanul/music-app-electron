@@ -1,38 +1,37 @@
-// Import
+// import
 import Vue from 'vue';
 import 'normalize.css/normalize.css';
-import axios from 'axios';
-import VueAxios from 'vue-axios';
 import slider from 'vue-slider-component';
 import tooltip from 'v-tooltip';
 import parallax from 'vue-parallax-js';
 import viewport from 'vue-in-viewport-directive';
-import stage from './stage.vue';
-import sideNav from './sidenav.vue';
-import headerBar from './headerbar.vue';
-import footerBar from './footerbar.vue';
-import flexTable from './flextable.vue';
-import sectionItem from './sectionitem.vue';
-import eventCard from './eventcard.vue';
-import search from './search.vue';
+import stage from './layout/stage.vue';
+import navigation from './layout/navigation.vue';
+import header from './layout/header.vue';
+import footer from './layout/footer.vue';
+import section from './layout/section.vue';
+import list from './list.vue';
+import item from './item.vue';
 import spinner from './spinner.vue';
+import notice from './notice.vue';
+import eventCard from './eventcard.vue';
 
-// Register components
-Vue.component('stage', stage);
-Vue.component('sidenav', sideNav);
-Vue.component('headerbar', headerBar);
-Vue.component('footerbar', footerBar);
-Vue.component('flextable', flexTable);
-Vue.component('sectionitem', sectionItem);
-Vue.component('eventcard', eventCard);
-Vue.component('search', search);
-Vue.component('spinner', spinner);
-Vue.component('slider', slider);
+// register components
+Vue.component('ma-slider', slider);
+Vue.component('ma-stage', stage);
+Vue.component('ma-navigation', navigation);
+Vue.component('ma-header', header);
+Vue.component('ma-footer', footer);
+Vue.component('ma-section', section);
+Vue.component('ma-list', list);
+Vue.component('ma-item', item);
+Vue.component('ma-spinner', spinner);
+Vue.component('ma-notice', notice);
+Vue.component('ma-event', eventCard);
 
-// Register plugins
+// register plugins
 Vue.use(tooltip);
 Vue.use(parallax);
-Vue.use(VueAxios, axios);
 
-// Register directives
+// register directives
 Vue.directive('in-viewport', viewport);

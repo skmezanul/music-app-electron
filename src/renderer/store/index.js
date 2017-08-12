@@ -4,29 +4,42 @@ import { createVuexLoader } from 'vuex-loading';
 
 const VuexLoading = createVuexLoader({
   moduleName: 'loading',
-  componentName: 'loading',
+  componentName: 'ma-loading',
   className: 'loading',
 });
 
 Vue.use(Vuex);
 Vue.use(VuexLoading);
 
+/* eslint-disable no-new */
+
 const store = new Vuex.Store({
   strict: true,
   state: {
-    artist: {},
-    currentUser: {},
+    currentPlayback: null,
+    currentUser: [],
     deviceID: null,
+    notices: [],
+    scrollPosition: null,
   },
   mutations: {
-    artistInfo(state, response) {
-      state.artist = response;
+    CURRENT_PLAYBACK(state, data) {
+      state.currentPlayback = data;
     },
-    currentUser(state, response) {
-      state.currentUser = response;
+    CURRENT_USER(state, data) {
+      state.currentUser = data;
     },
-    deviceID(state, response) {
-      state.deviceID = response;
+    DEVICE_ID(state, data) {
+      state.deviceID = data;
+    },
+    ADD_NOTICE(state, data) {
+      state.notices.unshift(data);
+    },
+    REMOVE_NOTICE(state, index) {
+      state.notices.splice(index, 1);
+    },
+    SCROLL_POSITION(state, position) {
+      state.scrollPosition = position;
     },
   },
   plugins: [VuexLoading.Store],

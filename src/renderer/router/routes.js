@@ -1,7 +1,6 @@
 // Components for "browse"
 const browseIndex = require('./views/browse/index.vue');
 const browseOverview = require('./views/browse/_overview.vue');
-const browseCharts = require('./views/browse/_charts.vue');
 
 // Components for "artist"
 const artistIndex = require('./views/artist/index.vue');
@@ -11,91 +10,97 @@ const artistSimilar = require('./views/artist/_similar.vue');
 const artistInformation = require('./views/artist/_information.vue');
 
 // Components for "mymusic"
-const mymusicLastheard = require('./views/mymusic/lastheard.vue');
+const mymusicHistory = require('./views/mymusic/history.vue');
 
 // Component for single album
-const albumIndex = require('./views/album/index.vue');
+const album = require('./views/album.vue');
 
 // Component for single playlist
-const playlistIndex = require('./views/playlist/index.vue');
+const playlist = require('./views/playlist.vue');
+
+// Component for search
+const search = require('./views/search.vue');
 
 export default [{
-  path: '/browse',
-  component: browseIndex,
-  children: [{
-    path: '',
-    name: 'Overview2',
-    meta: {
-      stage: 'full',
-    },
-    component: browseOverview,
-  },
-  {
-    path: 'charts',
-    name: 'charts',
-    meta: {
-      stage: 'compact',
-    },
-    component: browseCharts,
-  },
-  ],
+	path: '/browse',
+	component: browseIndex,
+	children: [{
+		path: '',
+		name: 'browseOverview',
+		meta: {
+			stage: 'compact',
+		},
+		component: browseOverview,
+	},
+	],
 },
 {
-  path: '/artist/:id',
-  component: artistIndex,
-  children: [{
-    path: '',
-    name: 'overview',
-    meta: {
-      stage: 'full',
-    },
-    component: artistOverview,
-  },
-  {
-    path: 'concerts',
-    name: 'concerts',
-    meta: {
-      stage: 'compact',
-    },
-    component: artistConcerts,
-  },
-  {
-    path: 'similar',
-    name: 'similar',
-    meta: {
-      stage: 'compact',
-    },
-    component: artistSimilar,
-  },
-  {
-    path: 'information',
-    name: 'information',
-    meta: {
-      stage: 'compact',
-    },
-    component: artistInformation,
-  },
-  ],
+	path: '/artist/:id',
+	component: artistIndex,
+	children: [{
+		path: '',
+		name: 'artistOverview',
+		meta: {
+			stage: 'full',
+		},
+		component: artistOverview,
+	},
+	{
+		path: 'concerts',
+		name: 'artistConcerts',
+		meta: {
+			stage: 'compact',
+		},
+		component: artistConcerts,
+	},
+	{
+		path: 'similar',
+		name: 'artistSimilar',
+		meta: {
+			stage: 'compact',
+		},
+		component: artistSimilar,
+	},
+	{
+		path: 'information',
+		name: 'artistInformation',
+		meta: {
+			stage: 'compact',
+		},
+		component: artistInformation,
+	},
+	],
 },
 {
-  path: '/album/:id',
-  component: albumIndex,
-  meta: {
-    stage: 'compact',
-  },
+	path: '/album/:id',
+	name: 'album',
+	meta: {
+		stage: 'compact',
+	},
+	component: album,
 },
 {
-  path: '/playlist/:user/:id',
-  component: playlistIndex,
-  meta: {
-    stage: 'compact',
-  },
+	path: '/playlist/:user/:id',
+	name: 'playlist',
+	meta: {
+		stage: 'compact',
+	},
+	component: playlist,
 },
 {
-  path: '/lastheard',
-  component: mymusicLastheard,
-  meta: {
-    stage: 'full',
-  },
+	path: '/search/:query',
+	name: 'search',
+	meta: {
+		stage: 'compact',
+	},
+	component: search,
+},
+{
+	path: '/history',
+	name: 'mymusicHistory',
+	meta: {
+		stage: 'full',
+	},
+	component: mymusicHistory,
 },
 ];
