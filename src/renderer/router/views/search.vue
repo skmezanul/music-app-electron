@@ -1,21 +1,21 @@
 <template lang="pug">
 main.main-container
 	// stage
-	ma-stage(type='search', :image='results.tracks.items[0].album.images[0].url', :title="`Results for '${$route.params.query}'`")
+	ma-stage(:subtitle='$tc("search", 1)', :image='results.tracks.items[0].album.images[0].url', :title="`${$t('resultsfor')} '${$route.params.query}'`")
 
 	.page-container
 		// tracks
-		ma-section(v-if='results.tracks.items.length > 0', :title='`Tracks (${results.tracks.items.length})`', :collapsible='true')
-			ol.flex-table
-				ma-list(v-for='(track, index) in results.tracks.items', :key='track.id', :primaryID='track.id', :type='track.type', :image='track.album.images[0].url', :title='track.name', :duration='track.duration_ms', :index='index')
+		ma-section(v-if='results.tracks.items.length > 0', :title='`${$tc("track", 0)} (${results.tracks.items.length})`', :collapsible='true')
+			ol.list
+				ma-list(v-for='(track, index) in results.tracks.items', :key='track.id', :primaryid='track.id', :type='track.type', :image='track.album.images[0].url', :title='track.name', :duration='track.duration_ms', :index='index')
 
 		// albums
-		ma-section(v-if='results.albums.items.length > 0', :title='`Albums (${results.albums.items.length})`', :collapsible='true')
+		ma-section(v-if='results.albums.items.length > 0', :title='`${$tc("album", 0)} (${results.albums.items.length})`', :collapsible='true')
 			.section-items-container
 				ma-item(v-for='album in results.albums.items', :key='album.id', :type='album.type', :primaryid='album.id', :secondaryid='album.artists[0].id', :image='album.images[0].url', :title='album.name', :artist='album.artists')
 
 		// artists
-		ma-section(v-if='results.artists.items.length > 0', :title='`Artists (${results.artists.items.length})`', :collapsible='true')
+		ma-section(v-if='results.artists.items.length > 0', :title='`${$tc("artist", 0)} (${results.artists.items.length})`', :collapsible='true')
 			.section-items-container
 				ma-item(v-for='artist in results.artists.items', :type='artist.type', :key='artist.id', :title='artist.name', :primaryid='artist.id')
 </template>
@@ -33,13 +33,13 @@ export default {
     this.getResults();
   },
   watch: {
-    $route: 'getResults',
+    // update playing state when playback is changing
+    '$route.params.query': 'getResults',
   },
   methods: {
     // get search results from the api
     getResults() {
       this.$startLoading('fetching data');
-      this.results = [];
       this.axios({
         method: 'get',
         url: '/search',
@@ -50,11 +50,10 @@ export default {
       }).then((res) => {
         this.results = res.data;
         this.$endLoading('fetching data');
-      }).catch((err) => {
-        this.results = [];
+      }).catch(() => {
         this.$router.go(-1);
         this.$endLoading('fetching data');
-        this.$store.commit('ADD_NOTICE', `Playlist could not be fetched, please try again later. ${err}`);
+        this.$store.commit('ADD_NOTICE', this.$t('errors.fetchresults'));
       });
     },
   },

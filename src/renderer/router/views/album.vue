@@ -1,14 +1,15 @@
 <template lang="pug">
 main.main-container
 	// stage
-	ma-stage(:type='album.type', :image='album.images[0].url', :title='album.name', :meta='`By ${album.artists[0].name}`')
+	ma-stage(:subtitle='$tc("album", 1)', :image='album.images[0].url', :title='album.name', :meta='`${$t("by")} ${album.artists[0].name}`')
 
 	.page-container
 		// tracks
 		ma-section
-			ol.flex-table
+			ol.list
 				ma-list(v-for='(track, index) in album.tracks.items', :key='track.id', :type='track.type', :title='track.name', :primaryid='track.id', :duration='track.duration_ms', :index='index')
 </template>
+
 <script>
 export default {
   data() {
@@ -21,15 +22,10 @@ export default {
     // already being observed
     this.getSingleAlbum();
   },
-  watch: {
-    // call again if route changes
-    $route: 'getSingleAlbum',
-  },
   methods: {
     // get album from the api
     getSingleAlbum() {
       this.$startLoading('fetching data');
-      this.album = [];
       this.axios({
         method: 'get',
         url: `/albums/${this.$route.params.id}`,
@@ -39,11 +35,10 @@ export default {
       }).then((res) => {
         this.album = res.data;
         this.$endLoading('fetching data');
-      }).catch((err) => {
-        this.album = [];
+      }).catch(() => {
         this.$router.go(-1);
         this.$endLoading('fetching data');
-        this.$store.commit('ADD_NOTICE', `Album could not be fetched, please try again later. ${err}`);
+        this.$store.commit('ADD_NOTICE', this.$t('errors.fetchalbum'));
       });
     },
   },

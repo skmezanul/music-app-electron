@@ -1,10 +1,11 @@
 <template lang="pug">
 main.main-container
 	// stage
-	ma-stage(:type='artist.type', :navigation='navigation', :image='artist.images[0].url', :title='artist.name')
+	ma-stage(:subtitle='$tc("artist", 1)', :navigation='navigation', :image='artist.images[0].url', :title='artist.name')
 
 	// router view
-	router-view
+	keep-alive
+		router-view
 </template>
 
 <script>
@@ -13,17 +14,17 @@ export default {
     return {
       artist: [],
       navigation: [{
-        title: 'Overview',
-        link: '',
-      },
-      {
-        title: 'Similar Artists',
-        link: 'similar',
-      },
-      {
-        title: 'Information',
-        link: 'information',
-      },
+          title: this.$t('overview'),
+          link: '',
+        },
+        {
+          title: this.$t('relatedartists'),
+          link: 'related',
+        },
+        {
+          title: this.$t('about'),
+          link: 'about',
+        },
       ],
     };
   },
@@ -32,26 +33,20 @@ export default {
     // already being observed
     this.getArtist();
   },
-  watch: {
-    // call again if route changes
-    $route: 'getArtist',
-  },
   methods: {
     // get artist information from the api
     getArtist() {
       this.$startLoading('fetching data');
-      this.artist = [];
       this.axios({
         method: 'get',
         url: `/artists/${this.$route.params.id}`,
       }).then((res) => {
         this.artist = res.data;
         this.$endLoading('fetching data');
-      }).catch((err) => {
-        this.artist = [];
+      }).catch(() => {
         this.$router.go(-1);
         this.$endLoading('fetching data');
-        this.$store.commit('ADD_NOTICE', `Artist info could not be fetched, please try again later. ${err}`);
+        this.$store.commit('ADD_NOTICE', this.$t('errors.fetchartistinfo'));
       });
     },
   },

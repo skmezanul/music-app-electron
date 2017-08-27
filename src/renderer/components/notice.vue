@@ -1,11 +1,11 @@
 <template lang="pug">
-.notice
+.notice-container
 	.notice-inner
 		// message
 		p {{ message }}
 
 		// close
-		i.material-icons(@click="$emit('remove')") close
+		i.material-icons(@click='$emit("remove")') close
 </template>
 
 <script>
@@ -13,35 +13,34 @@ export default {
   props: [
     'message',
   ],
-  methods: {
-    closeNotice() {
-      this.$store.commit('notice', []);
-    },
-  },
+  created() {
+    setInterval(() => {
+      this.$emit("remove");
+    }, 4000);
+  }
 };
 </script>
 
 <style lang="scss">
-.notice {
+.notice-container {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 999;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: $accent-color;
-    position: fixed;
     height: 69px;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 999;
-    margin-left: 200px;
+    background-color: $accent-color;
     .notice-inner {
         display: flex;
-        justify-content: space-between;
         align-items: center;
+        justify-content: space-between;
         p {
-            font-size: 1.1em;
-            font-weight: 300;
             margin: 0;
+            font-weight: 300;
+            font-size: 1.1em;
         }
         i {
             @include item-hover;

@@ -1,72 +1,116 @@
 <template lang="pug">
-.stage(:class="{ 'with-cover' : type == 'album' || type == 'playlist', 'compact': $route.meta.stage == 'compact'}")
+.stage(:class='{ "has-cover" : hasCover, "compact": isCompact }')
+
 	// background
 	.stage-background
 		img(v-parallax='0.5', :src='image', :alt='title')
 	.stage-inner
-		.cover-container.mobile-hidden(v-if="type == 'album' || type == 'playlist'")
+		.cover-container.mobile-hidden(v-if="hasCover")
 			img(:src='image', :alt='title')
 
 		// content
 		.stage-container
-			h2 {{ type }}
+			h2 {{ subtitle }}
 			h1 {{ title }}
-			.meta-container.mobile-hidden(v-if='meta != null')
-				a(v-html='meta')
-			.button-container(v-if="type != 'browse'")
+			.meta-container.mobile-hidden(v-if='meta')
+				a {{ formattedMeta }}
+			.button-container(v-if='hasButtons')
 				.button-group
 					a.btn.btn-accent
 						i.material-icons play_circle_filled
-						| Play All
-					a.btn(v-if="type == 'artist' || type == 'playlist'")
+						| {{ $t('playall') }}
+					a.btn(v-if='canFollow')
 						i.material-icons add_circle
-						| Follow
+						| {{ $t('follow') }}
 					a.btn.btn-icon
 						i.material-icons favorite
 				a.btn.btn-transparent
 					i.material-icons share
-					| Share
+					| {{ $t('share') }}
 
 		// navigation
-		nav.subnav.mobile-hidden(v-if='navigation != null')
+		nav.subnav.mobile-hidden(v-if='navigation')
 			ul
 				li(v-for='navitem in navigation')
-					router-link(:to='`/${type}/${$route.params.id}/${navitem.link}`') {{ navitem.title }}
+					router-link(:to='toTarget("artist", $route.params.id, navitem.link)') {{ navitem.title }}
 </template>
 
 <script>
 export default {
   props: [
-    'type',
+    'subtitle',
     'navigation',
     'image',
     'title',
     'meta',
   ],
+  methods: {
+    toTarget(type, id, link) {
+      return `/${type}/${id}/${link}`;
+    },
+  },
+  computed: {
+    // remove "Cover" message from meta on playlist
+    formattedMeta() {
+      const meta = this.meta;
+      const formattedMeta = meta.split('Cover')[0];
+      return formattedMeta;
+    },
+
+    // check if can follow
+    canFollow() {
+      if (this.$route.name.includes("artist") || this.$route.name.includes("playlist")) {
+        return true;
+      }
+      return false;
+    },
+
+    // check if stage has cover
+    hasCover() {
+      if (this.$route.meta.cover) {
+        return true;
+      }
+      return false;
+    },
+
+    // check if stage has buttons
+    hasButtons() {
+      if (this.$route.meta.buttons) {
+        return true;
+      }
+      return false;
+    },
+
+    // check if stage is compact
+    isCompact() {
+      if (this.$route.meta.compact) {
+        return true;
+      }
+      return false;
+    },
+  },
 };
 </script>
 
 <style lang="scss">
 .stage {
-    display: flex;
     position: relative;
+    display: flex;
     align-items: flex-end;
     justify-content: center;
-    width: 100%;
-    transition: margin-top 0.3s;
-    will-change: margin-top;
-    margin-bottom: 20px;
-    margin-top: 0;
-    padding-top: 65px;
-    min-height: 400px;
-    height: 550px;
     overflow: hidden;
+    margin-top: 0;
+    margin-bottom: 20px;
+    padding-top: 65px;
+    min-height: 350px;
+    width: 100%;
+    height: 550px;
 
     &.compact {
-        margin-top: -250px;
+        height: 350px;
         .stage-background {
             img {
-                filter: saturate(300%) blur(20px);
+                filter: saturate(200%) blur(20px);
             }
         }
         .stage-inner {
@@ -78,7 +122,7 @@ export default {
         }
     }
 
-    &.with-cover {
+    &.has-cover {
         .stage-inner {
             flex-direction: row;
             align-items: center;
@@ -88,19 +132,17 @@ export default {
     .stage-background {
         position: absolute;
         top: 0;
-        left: 0;
         right: 0;
         bottom: 0;
-        animation: zoomOut 0.7s 0.2s both;
+        left: 0;
         display: flex;
         align-items: center;
         justify-content: center;
+        animation: zoomOut 0.7s 0.2s both;
 
         img {
-            will-change: filter;
-            filter: saturate(150%);
-            transition: filter 0.3s;
             width: 100%;
+            filter: saturate(130%);
         }
     }
     &:after {
@@ -114,17 +156,17 @@ export default {
     }
 
     .stage-inner {
+        z-index: 996;
         display: flex;
         flex-direction: column;
-        z-index: 996;
 
         .cover-container {
-            height: 250px;
-            width: 250px;
-            min-width: 250px;
             overflow: hidden;
-            border-radius: 10px;
             margin-right: 35px;
+            min-width: 250px;
+            width: 250px;
+            height: 250px;
+            border-radius: 10px;
             box-shadow: $shadow;
             img {
                 width: 100%;
@@ -137,43 +179,33 @@ export default {
             flex-direction: column;
 
             h1 {
-                will-change: font-size;
-                transition: font-size 0.3s;
-                font-size: 5.5em;
                 margin-top: 5px;
                 margin-left: -3px;
+                font-size: 5.5em;
             }
             .meta-container {
                 margin-top: 10px;
+                width: 80%;
                 a {
-                    line-height: 1.3em;
-                    font-size: 1.2em;
-                    letter-spacing: 1.7px;
                     color: rgba($white, 0.7);
-
-                    a {
-                        font-size: inherit;
-                        transition: color 0.3s;
-                        &:hover {
-                            color: $white;
-                        }
-                    }
+                    font-size: 1.2em;
+                    line-height: 1.3em;
                 }
             }
             .button-container {
-                margin-top: 15px;
                 display: flex;
                 align-items: center;
+                margin-top: 15px;
 
                 .button-group {
                     display: flex;
+                    overflow: hidden;
                     margin: 0 5px 10px 0;
                     border-radius: 5px;
-                    overflow: hidden;
 
                     a {
-                        border-radius: 0;
                         margin: 0;
+                        border-radius: 0;
                         &:nth-child(3) {
                             border-left: 1px solid $blue;
                         }
@@ -192,32 +224,31 @@ nav {
             display: flex;
 
             li {
-                padding: 15px 0;
                 margin-right: 50px;
+                padding: 15px 0;
                 a {
-                    letter-spacing: 2px;
-                    text-transform: uppercase;
-                    transition: color 0.3s;
                     color: rgba($white, 0.5);
-                    font-weight: 300;
+                    text-transform: uppercase;
+                    letter-spacing: 2px;
                     font-size: 0.9em;
+                    transition: color 0.5s;
 
-                    &.router-link-exact-active {
+                    &.active {
                         color: $white;
                         &:after {
-                            display: block;
                             position: relative;
                             top: 0.9em;
+                            display: block;
+                            margin: 0 auto;
                             width: 40px;
                             height: 3px;
-                            margin: 0 auto;
                             background-color: $accent-color;
                             content: "";
                         }
                     }
-                    &:not(.router-link-exact-active):hover {
-                        cursor: pointer;
+                    &:not(.active):hover {
                         color: rgba($white, 0.7);
+                        cursor: pointer;
                     }
                 }
             }

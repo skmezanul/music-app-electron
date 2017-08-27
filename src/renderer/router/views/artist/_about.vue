@@ -1,14 +1,15 @@
 <template lang="pug">
 .page-container
-	// biography
-	ma-section(:title='`About ${$parent.artist.name}`')
+	// about this artist
+	ma-section(:title='`${$t("about")} ${$parent.artist.name}`')
 		p.biography(v-html='biography')
 </template>
+
 <script>
 export default {
   data() {
     return {
-      biography: null,
+      biography: '',
     };
   },
   created() {
@@ -28,13 +29,16 @@ export default {
           artist: this.$parent.artist.name,
           limit: 1,
           autocorrect: 1,
+          lang: this.$store.state.currentUser.country,
           format: 'json',
         },
       }).then((res) => {
-        this.biography = res.data.artist.bio.content;
+        const bio = res.data.artist.bio.content;
+        const formattedBio = bio.split('<a')[0];
+        this.biography = formattedBio;
       }).catch((err) => {
-        this.$store.commit('ADD_NOTICE', `Biography could not be fetched, please try again later. ${err}`);
-        this.biography = null;
+        this.$router.go(-1);
+        this.$store.commit('ADD_NOTICE', this.$t('errors.fetchartistbio'));
       });
     },
   },

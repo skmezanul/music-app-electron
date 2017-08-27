@@ -6,15 +6,15 @@ Vue.use(VueRouter);
 
 /* eslint-disable no-new */
 
-const router = new VueRouter({
+export default new VueRouter({
   mode: 'history',
   routes,
-  scrollBehavior(to, from, savedPosition) {
+  linkActiveClass: '',
+  linkExactActiveClass: 'active',
+  scrollBehavior() {
     return {
       x: 0,
       y: 0,
     };
   },
 });
-
-export default router;

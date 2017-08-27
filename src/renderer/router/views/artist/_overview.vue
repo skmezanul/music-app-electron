@@ -1,25 +1,26 @@
 <template lang="pug">
 .page-container
 	// top tracks
-	ma-section(v-if='toptracks.length > 0', title='Top Tracks', :collapsible='true')
-		ol.flex-table
-			ma-list(v-for='(track, index) in toptracks', :key='track.id', :primaryID='track.id', :type='track.type', :image='track.album.images[0].url', :title='track.name', :duration='track.duration_ms', :index='index')
+	ma-section(v-if='toptracks.length > 0', :title='$t("toptracks")', :collapsible='true')
+		ol.list
+			ma-list(v-for='(track, index) in toptracks', :key='track.id', :primaryid='track.id', :type='track.type', :image='track.album.images[0].url', :title='track.name', :duration='track.duration_ms', :index='index')
 
 	// albums
-	ma-section(v-if='albums.length > 0', title='Albums', :collapsible='true')
+	ma-section(v-if='albums.length > 0', :title='$tc("album", 0)', :collapsible='true')
 		.section-items-container
 			ma-item(v-for='album in albums', :key='album.id', :type='album.type', :primaryid='album.id', :secondaryid='album.artists[0].id', :image='album.images[0].url', :title='album.name', :artist='album.artists')
 
 	// singles
-	ma-section(v-if='singles.length > 0', title='Singles', :collapsible='true')
+	ma-section(v-if='singles.length > 0', :title='$tc("single", 0)', :collapsible='true')
 		.section-items-container
 			ma-item(v-for='single in singles', :key='single.id', :type='single.type', :primaryid='single.id', :secondaryid='single.artists[0].id', :image='single.images[0].url', :title='single.name', :artist='single.artists')
 
 	// appears on
-	ma-section(v-if='appearson.length > 0', title='Appears On', :collapsible='true')
+	ma-section(v-if='appearson.length > 0', :title='$t("appearson")', :collapsible='true')
 		.section-items-container
 			ma-item(v-for='album in appearson', :key='album.id', :type='album.type', :primaryid='album.id', :secondaryid='album.artists[0].id', :image='album.images[0].url', :title='album.name', :artist='album.artists')
 </template>
+
 <script>
 export default {
   data() {
@@ -49,9 +50,9 @@ export default {
         },
       }).then((res) => {
         this.toptracks = res.data.tracks;
-      }).catch((err) => {
-        this.$store.commit('ADD_NOTICE', `This artists top tracks could not be fetched, please try again later. ${err}`);
-        this.toptracks = [];
+      }).catch(() => {
+        this.$router.go(-1);
+        this.$store.commit('ADD_NOTICE', this.$t('errors.fetchartisttoptracks'));
       });
     },
 
@@ -66,9 +67,9 @@ export default {
         },
       }).then((res) => {
         this.albums = res.data.items;
-      }).catch((err) => {
-        this.$store.commit('ADD_NOTICE', `Albums could not be fetched, please try again later. ${err}`);
-        this.albums = [];
+      }).catch(() => {
+        this.$router.go(-1);
+        this.$store.commit('ADD_NOTICE', this.$t('errors.fetchartistalbums'));
       });
     },
 
@@ -83,9 +84,9 @@ export default {
         },
       }).then((res) => {
         this.singles = res.data.items;
-      }).catch((err) => {
-        this.$store.commit('ADD_NOTICE', `Singles could not be fetched, please try again later. ${err}`);
-        this.singles = [];
+      }).catch(() => {
+        this.$router.go(-1);
+        this.$store.commit('ADD_NOTICE', this.$t('errors.fetchartistsingles'));
       });
     },
 
@@ -100,9 +101,9 @@ export default {
         },
       }).then((res) => {
         this.appearson = res.data.items;
-      }).catch((err) => {
-        this.$store.commit('ADD_NOTICE', `Albums this artist appears on could not be fetched, please try again later. ${err}`);
-        this.appearson = [];
+      }).catch(() => {
+        this.$router.go(-1);
+        this.$store.commit('ADD_NOTICE', this.$t('errors.fetchartistappearson'));
       });
     },
   },

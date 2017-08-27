@@ -1,24 +1,26 @@
 // Components for "browse"
-const browseIndex = require('./views/browse/index.vue');
-const browseOverview = require('./views/browse/_overview.vue');
+const browseIndex = () => import(/* webpackChunkName: "browse" */ './views/browse/index');
+const browseOverview = () => import(/* webpackChunkName: "browse" */ './views/browse/_overview');
+const browseCharts = () => import(/* webpackChunkName: "browse" */ './views/browse/_charts');
+const browseCategories = () => import(/* webpackChunkName: "browse" */ './views/browse/_categories');
 
 // Components for "artist"
-const artistIndex = require('./views/artist/index.vue');
-const artistOverview = require('./views/artist/_overview.vue');
-const artistSimilar = require('./views/artist/_similar.vue');
-const artistInformation = require('./views/artist/_information.vue');
+const artistIndex = () => import(/* webpackChunkName: "artist" */ './views/artist/index');
+const artistOverview = () => import(/* webpackChunkName: "artist" */ './views/artist/_overview');
+const artistRelated = () => import(/* webpackChunkName: "artist" */ './views/artist/_related');
+const artistAbout = () => import(/* webpackChunkName: "artist" */ './views/artist/_about');
 
-// Components for "mymusic"
-const mymusicHistory = require('./views/mymusic/history.vue');
+// Components for "mylibrary"
+const mylibraryHistory = () => import(/* webpackChunkName: "mylibrary" */ './views/mylibrary/history');
 
 // Component for single album
-const album = require('./views/album.vue');
+const album = () => import(/* webpackChunkName: "album" */ './views/album');
 
 // Component for single playlist
-const playlist = require('./views/playlist.vue');
+const playlist = () => import(/* webpackChunkName: "playlist" */ './views/playlist');
 
 // Component for search
-const search = require('./views/search.vue');
+const search = () => import(/* webpackChunkName: "search" */ './views/search');
 
 export default [{
   path: '/browse',
@@ -27,9 +29,31 @@ export default [{
     path: '',
     name: 'browseOverview',
     meta: {
-      stage: 'compact',
+      compact: true,
+      cover: false,
+      buttons: false,
     },
     component: browseOverview,
+  },
+  {
+    path: 'charts',
+    name: 'browseCharts',
+    meta: {
+      compact: true,
+      cover: false,
+      buttons: false,
+    },
+    component: browseCharts,
+  },
+  {
+    path: 'categories',
+    name: 'browseCategories',
+    meta: {
+      compact: true,
+      cover: false,
+      buttons: false,
+    },
+    component: browseCategories,
   },
   ],
 },
@@ -40,25 +64,31 @@ export default [{
     path: '',
     name: 'artistOverview',
     meta: {
-      stage: 'full',
+      compact: false,
+      cover: false,
+      buttons: true,
     },
     component: artistOverview,
   },
   {
-    path: 'similar',
-    name: 'artistSimilar',
+    path: 'related',
+    name: 'artistRelated',
     meta: {
-      stage: 'compact',
+      compact: false,
+      cover: false,
+      buttons: true,
     },
-    component: artistSimilar,
+    component: artistRelated,
   },
   {
-    path: 'information',
-    name: 'artistInformation',
+    path: 'about',
+    name: 'artistAbout',
     meta: {
-      stage: 'compact',
+      compact: false,
+      cover: false,
+      buttons: true,
     },
-    component: artistInformation,
+    component: artistAbout,
   },
   ],
 },
@@ -66,7 +96,9 @@ export default [{
   path: '/album/:id',
   name: 'album',
   meta: {
-    stage: 'compact',
+    compact: true,
+    cover: true,
+    buttons: true,
   },
   component: album,
 },
@@ -74,7 +106,9 @@ export default [{
   path: '/playlist/:user/:id',
   name: 'playlist',
   meta: {
-    stage: 'compact',
+    compact: true,
+    cover: true,
+    buttons: true,
   },
   component: playlist,
 },
@@ -82,16 +116,20 @@ export default [{
   path: '/search/:query',
   name: 'search',
   meta: {
-    stage: 'compact',
+    compact: true,
+    cover: false,
+    buttons: false,
   },
   component: search,
 },
 {
   path: '/history',
-  name: 'mymusicHistory',
+  name: 'mylibraryHistory',
   meta: {
-    stage: 'full',
+    compact: false,
+    cover: false,
+    buttons: true,
   },
-  component: mymusicHistory,
+  component: mylibraryHistory,
 },
 ];

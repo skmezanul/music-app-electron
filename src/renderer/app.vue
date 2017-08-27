@@ -1,72 +1,57 @@
 <template lang="pug">
 #app(:class='{scrolled: $store.state.scrollPosition > 0}')
 
-	// header
-	ma-header
+  // header
+  ma-header
 
-	// navigation
-	ma-navigation
+  // navigation
+  ma-navigation
 
-	// router view
-	router-view(:key='$route.params.id')
+  // router view
+  router-view(:key='$route.params.id')
 
-	// footer
-	transition(name='fade')
-		ma-footer
+  // footer
+  transition(name='fade')
+    ma-footer
 
-	// tooltips
-	.tooltip-container
+  // tooltips
+  .tooltip-container
 
-	// loading spinner
-	ma-loading.loading-container
-		template(slot='spinner')
-			ma-spinner
+  // loading spinner
+  transition(name='fade')
+    ma-loading.loading-container(v-if='$isLoading("fetching data")')
+      template(slot='spinner')
+        ma-loader
 
-	// notices
-	transition-group(name='slide', tag='notices')
-		ma-notice(v-for='(notice, index) in $store.state.notices', :key='index', :message='notice', @remove="$store.commit('REMOVE_NOTICE', index)")
+  // notices
+  transition-group(name='slide', tag='notices')
+    ma-notice(v-for='(notice, index) in $store.state.notices', :key='index', :message='notice', @remove="removeNotice(index)")
 </template>
 
 <script>
+import {
+  mapActions
+} from 'vuex';
+
 export default {
   created() {
     // fetch the data when the view is created and the data is
     // already being observed
-    this.getCurrentUser();
-    this.getMyDevices();
     this.showDevNotice();
+    this.GET_CURRENT_USER();
+    this.GET_MY_DEVICES();
   },
   methods: {
+    ...mapActions(['GET_CURRENT_USER', 'GET_MY_DEVICES']),
 
     // show development notice
     showDevNotice() {
-      this.$store.commit('ADD_NOTICE', 'This app is still work in progress. Contact me (microeinhundert) on github if you want to contribute to the development.');
+      this.$store.commit('ADD_NOTICE', this.$t('notices.wip'));
     },
 
-    // get the current user's info
-    getCurrentUser() {
-      this.axios({
-        method: 'get',
-        url: '/me',
-      }).then((res) => {
-        this.$store.commit('CURRENT_USER', res.data);
-      }).catch((err) => {
-        this.$store.commit('CURRENT_USER', []);
-        this.$store.commit('ADD_NOTICE', `Current user could not be fetched, please try again later. ${err}`);
-      });
-    },
-
-    // get the current device's ID
-    getMyDevices() {
-      this.axios({
-        method: 'get',
-        url: '/me/player/devices',
-      }).then((res) => {
-        this.$store.commit('DEVICE_ID', res.data.devices[0].id);
-      }).catch((err) => {
-        this.$store.commit('DEVICE_ID', null);
-        this.$store.commit('ADD_NOTICE', `Available devices could not be fetched, please try again later. ${err}`);
-      });
+    // remove notice
+    removeNotice(index) {
+      this.$store.commit('REMOVE_NOTICE', index);
     },
 
     // get the current scroll position
@@ -88,25 +73,27 @@ export default {
 </script>
 
 <style lang="scss">
+* {
+    box-sizing: border-box;
+}
+
 body {
-    font-family: 'Roboto', sans-serif;
-    letter-spacing: 1px;
+    min-width: 611px;
     background-color: $main-bg-color;
     color: $white;
-    min-width: 611px;
+    letter-spacing: 1px;
+    font-family: 'Roboto', sans-serif;
     user-select: none;
-    -webkit-user-select: none;
 }
 
 input {
     user-select: text;
-    -webkit-user-select: text;
 }
 
 ol,
 ul {
-    padding: 0;
     margin: 0;
+    padding: 0;
     list-style: none;
 }
 
@@ -119,16 +106,15 @@ h4 {
 }
 
 h1 {
-    font-family: 'Ubuntu', sans-serif;
     font-weight: 700;
-    letter-spacing: 3px;
+    font-family: 'Ubuntu', sans-serif;
 }
 
 h2 {
-    font-size: 1.2em;
-    letter-spacing: 2px;
-    text-transform: uppercase;
     color: rgba($white, 0.7);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 1.2em;
 }
 
 a {
@@ -152,18 +138,18 @@ a {
 
 .dropdown {
     position: absolute;
-    width: 150px;
     top: 58px;
     right: 0;
     z-index: 999;
-    border-radius: 5px;
     overflow: hidden;
+    width: 150px;
+    border-radius: 5px;
     background-color: $dark-blue;
 
     li {
         padding: 15px;
-        transition: background-color 0.3s;
         font-size: 0.9em;
+        transition: background-color 0.3s;
         &:hover {
             background-color: $blue;
             cursor: pointer;
@@ -172,23 +158,25 @@ a {
 }
 
 .btn {
-    font-family: 'Ubuntu', sans-serif;
-    font-weight: 700;
     display: inline-flex;
     margin: 0 5px 10px 0;
     padding: 13px;
     border-radius: 3px;
-    background-color: $light-blue;
-    font-size: 0.9em !important;
-    letter-spacing: 1.5px;
     text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 700;
+    font-size: 0.9em;
+    font-family: 'Ubuntu', sans-serif;
     transition: background-color 0.3s, color 0.3s;
     &:hover {
         cursor: pointer;
     }
-    &:not(.btn-transparent):hover {
-        background-color: $white;
-        color: $black;
+    &:not(.btn-transparent) {
+        background-color: $light-blue;
+        &:hover {
+            background-color: $white;
+            color: $black;
+        }
     }
     &:not(.btn-icon) {
         i {
@@ -204,25 +192,20 @@ a {
     &.btn-accent {
         background-color: $accent-color;
     }
-
-    &.btn-transparent {
-        background-color: transparent;
-        box-shadow: none;
-    }
 }
 
 .tooltip-container {
     .tooltip {
-        display: block !important;
-        font-family: 'Roboto', sans-serif;
-        letter-spacing: 1px;
         z-index: 999;
+        display: block !important;
+        letter-spacing: 1px;
+        font-family: 'Roboto', sans-serif;
         transition: opacity 0.3s, visibility 0.3s;
 
         .tooltip-inner {
-            background: $dark-blue;
-            border-radius: 3px;
             padding: 5px 7px;
+            border-radius: 3px;
+            background: $dark-blue;
         }
 
         &[aria-hidden='true'] {
@@ -239,15 +222,17 @@ a {
 
 .scrolled {
     header {
-        background-color: $dark-blue;
         border-color: $border-color;
+        background-color: $dark-blue;
 
-        .header-inner {
+        .header-container {
             width: $small-width;
         }
     }
 }
+.loader-container,
 .main-container,
+.notice-container,
 header {
     margin-left: 200px;
 }
@@ -310,30 +295,30 @@ header {
 }
 @keyframes fadeInBottom {
     from {
-        transform: translateY(25px);
         opacity: 0;
+        transform: translateY(25px);
     }
 
     to {
-        transform: translateY(0);
         opacity: 1;
+        transform: translateY(0);
     }
 }
 @supports (backdrop-filter: blur(20px)) or (-webkit-backdrop-filter: blur(20px)) {
     .scrolled header,
     footer {
-        background-color: rgba($dark-blue, 0.7) !important;
-        backdrop-filter: saturate(200%) blur(20px);
+        background-color: rgba($dark-blue, 0.7);
         -webkit-backdrop-filter: saturate(200%) blur(20px);
+        backdrop-filter: saturate(200%) blur(20px);
     }
 }
 
-.header-inner,
+.header-container,
 .notice-inner,
 .page-section,
 .stage-inner {
-    width: $large-width;
     max-width: 1440px;
+    width: $large-width;
     @media screen and (max-width: 1500px) {
         width: $small-width;
     }

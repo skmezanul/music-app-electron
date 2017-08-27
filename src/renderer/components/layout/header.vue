@@ -1,26 +1,29 @@
-<template lang="pug">
+<template lang='pug'>
 header
-	.header-inner
-		// navigation
-		.header.left
-			i.material-icons(@click='goBack') keyboard_arrow_left
+  .header-container
+    // navigation
+    .header-inner.left
+      i.material-icons(@click='goBack') keyboard_arrow_left
 
-			i.material-icons(@click='goForward') keyboard_arrow_right
-		// search
-		.header.center
-			i.material-icons.search-icon search
-			input(type='text', @keyup.enter='fireSearch', v-model='searchQuery', placeholder='Search')
+      i.material-icons(@click='goForward') keyboard_arrow_right
+    // search
+    .header-inner.center
+      i.material-icons.search-icon search
+      input(type='text', @keyup.enter='startSearch', v-model='searchQuery', :placeholder='$tc("search", 0)')
 
-		// current user
-		.header.right
-			img.user-avatar.mobile-hidden(:src='$store.state.currentUser.images[0].url', :alt='$store.state.currentUser.display_name')
-			router-link.user-name.mobile-hidden(to='/') {{ $store.state.currentUser.display_name }}
-			i.toggle.material-icons(@click='toggleDropdown') keyboard_arrow_down
-			// user dropdown
-			ul.dropdown(v-if='userDropdown', v-on-clickaway='toggleDropdown')
-				li My Account
-				li Settings
-				li Log Out
+    // current user
+    .header-inner.right
+      img.user-avatar.mobile-hidden(:src='$store.state.currentUser.images[0].url', :alt='$store.state.currentUser.display_name')
+      router-link.user-name.mobile-hidden(to='/') {{ $store.state.currentUser.display_name }}
+      i.toggle.material-icons(@click='toggleDropdown') keyboard_arrow_down
+      // user dropdown
+      ul.dropdown(v-if='userDropdown', v-on-clickaway='toggleDropdown')
+        li
+          a {{ $t('myaccount') }}
+        li
+          a {{ $t('settings') }}
+        li
+          a {{ $t('logout') }}
 </template>
 
 <script>
@@ -32,21 +35,33 @@ export default {
   data() {
     return {
       userDropdown: false,
-      searchQuery: null,
+      searchQuery: '',
     };
   },
+  watch: {
+    searchQuery: 'startSearch',
+  },
   methods: {
-    fireSearch() {
-      this.$router.push({
-        path: `/search/${this.searchQuery}`,
-      });
+    // start the search
+    startSearch() {
+      if (this.searchQuery.length > 0) {
+        this.$router.push({
+          path: `/search/${this.searchQuery}`,
+        });
+      }
     },
+
+    // go one route back
     goBack() {
       this.$router.go(-1);
     },
+
+    // go one route forward
     goForward() {
       this.$router.go(1);
     },
+
+    // toggle user dropdown
     toggleDropdown() {
       this.userDropdown = !this.userDropdown;
     },
@@ -57,52 +72,51 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang='scss'>
 header {
-    display: flex;
-    justify-content: center;
-    border-bottom: 1px solid;
-    border-color: transparent;
-    background-color: transparent;
     position: fixed;
     top: 0;
     right: 0;
     left: 0;
-    z-index: 999;
+    z-index: 998;
+    display: flex;
+    justify-content: center;
     padding: 13px 0;
+    border-bottom: 1px solid;
+    border-color: transparent;
     transition: background-color 0.3s, border-color 0.3s;
     -webkit-app-region: drag;
     -webkit-font-smoothing: subpixel-antialiased;
 
-    .header-inner {
+    .header-container {
         display: flex;
         justify-content: space-between;
+        height: 42px;
+        transition: width 0.3s;
+        will-change: width;
         @media screen and (max-width: 955px) {
             width: 95%;
         }
-        transition: width 0.3s;
-        will-change: width;
-        height: 42px;
 
-        .header {
+        .header-inner {
             display: flex;
             align-items: center;
 
             &.left {
                 @media screen and (min-width: 955px) {
-                    justify-content: flex-start;
                     flex: 1;
+                    justify-content: flex-start;
                 }
 
                 i {
-                    font-size: 2.2em;
                     @include item-hover;
+                    font-size: 2.2em;
                 }
             }
 
             &.center {
-                margin: 0 10px;
                 position: relative;
+                margin: 0 10px;
                 @media screen and (max-width: 955px) {
                     width: 100%;
                 }
@@ -110,17 +124,16 @@ header {
                     flex: 2;
                 }
                 input {
-                    border: none;
-                    transition: background-color 0.3s, box-shadow 0.3s;
-                    padding: 12px 12px 12px 50px;
-                    box-sizing: border-box;
-                    background-color: rgba($white,0.1);
                     z-index: 1;
+                    padding: 12px 12px 12px 50px;
                     width: 100%;
-                    color: $white;
-                    border-radius: 5px;
-                    letter-spacing: 1.3px;
                     outline: 0;
+                    border: none;
+                    border-radius: 5px;
+                    background-color: rgba($white,0.1);
+                    color: $white;
+                    letter-spacing: 1.3px;
+                    transition: background-color 0.3s, box-shadow 0.3s;
                     -webkit-app-region: no-drag;
                     -webkit-font-smoothing: subpixel-antialiased;
                     &:focus {
@@ -133,40 +146,25 @@ header {
                     }
                 }
                 .search-icon {
-                    color: rgba($white, 0.5);
                     position: absolute;
-                    left: 17px;
                     top: 9px;
+                    left: 17px;
                     z-index: 2;
-                }
-                .search-dropdown {
-                    position: absolute;
-                    top: 42px;
-                    left: 0;
-                    right: 0;
-                    z-index: 999;
-                    max-height: 500px;
-                    padding: 20px;
-                    box-sizing: border-box;
-                    border: 1px solid $border-color;
-                    background-color: lighten($dark-blue, 3%);
-                    box-shadow: $shadow;
-                    border-radius: 0 0 5px 5px;
-                    overflow-y: auto;
+                    color: rgba($white, 0.5);
                 }
             }
 
             &.right {
                 position: relative;
                 @media screen and (min-width: 955px) {
-                    justify-content: flex-end;
                     flex: 1;
+                    justify-content: flex-end;
                 }
 
                 .user-avatar {
-                    border-radius: 100%;
-                    height: 34px;
                     width: 34px;
+                    height: 34px;
+                    border-radius: 100%;
                 }
 
                 .user-name {

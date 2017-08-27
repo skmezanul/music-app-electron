@@ -1,34 +1,36 @@
 <template lang="pug">
 footer
 	// current playback
-	.footer.left.mobile-hidden
+	.footer-container.left.mobile-hidden
 		img(:src='$store.state.currentPlayback.item.album.images[0].url', :alt='$store.state.currentPlayback.item.name')
 		.currently-playing
 			span.title {{ $store.state.currentPlayback.item.name }}
 			.artist-container
-				a.artist(v-for='artist in $store.state.currentPlayback.item.artists', :key='artist.id', @click='toArtist(artist.type, artist.id)') {{ artist.name }}
+				router-link.artist(v-for='artist in $store.state.currentPlayback.item.artists', :key='artist.id', :to='toArtist(artist.id)') {{ artist.name }}
 
 	// playback controls
-	.footer.center
-		i.shuffle.material-icons(@click='toggleShuffle', :class="{ 'active': $store.state.currentPlayback.shuffle_state == true }", v-tooltip="{ content: 'Shuffle', container: '.tooltip-container' }") shuffle
+	.footer-container.center
+		i.shuffle.material-icons(@click='toggleShuffle', :class='{ "active": $store.state.currentPlayback.shuffle_state == true }', v-tooltip='{ content: $t("shuffle"), container: ".tooltip-container" }') shuffle
 		i.skip.material-icons(@click='previousTrack') skip_previous
-		i.toggle.play.material-icons(v-show='$store.state.currentPlayback.is_playing == false', @click='resumePlayback') play_circle_filled
-		i.toggle.pause.material-icons(v-show='$store.state.currentPlayback.is_playing == true', @click='pausePlayback') pause_circle_filled
+		i.toggle.play.material-icons(v-show='!isPlaying', @click='resumePlayback') play_circle_filled
+		i.toggle.pause.material-icons(v-show='isPlaying', @click='pausePlayback') pause_circle_filled
 		i.skip.material-icons(@click='nextTrack') skip_next
-		i.repeat.material-icons(v-show="$store.state.currentPlayback.repeat_state != 'track'", @click='toggleRepeat', :class="{ 'active': $store.state.currentPlayback.repeat_state == 'context' }", v-tooltip="{ content: 'Repeat', container: '.tooltip-container' }") repeat
-		i.repeat.material-icons.active(v-show="$store.state.currentPlayback.repeat_state == 'track'", @click='toggleRepeat', v-tooltip="{ content: 'Repeat', container: '.tooltip-container' }") repeat_one
+		i.repeat.material-icons(v-show='$store.state.currentPlayback.repeat_state != "track"', @click='toggleRepeat', :class='{ "active": $store.state.currentPlayback.repeat_state == "context" }', v-tooltip='{ content: $t("repeat"), container: ".tooltip-container" }') repeat
+		i.repeat.material-icons.active(v-show='$store.state.currentPlayback.repeat_state == "track"', @click='toggleRepeat', v-tooltip='{ content: $t("repeat"), container: ".tooltip-container" }') repeat_one
 
 	// volume and other controls
-	.footer.right.mobile-hidden
+	.footer-container.right.mobile-hidden
 		i.volume.material-icons(v-if='volume == 0') volume_mute
 		i.volume.material-icons(v-if='volume <= 50 && volume > 0') volume_down
 		i.volume.material-icons(v-if='volume > 50') volume_up
-		ma-slider(ref='slider', v-model='volume', width='100px', :bgStyle='bgStyle', :sliderStyle='sliderStyle', :processStyle='sliderStyle', tooltip='false')
-		i.cast.material-icons(v-tooltip="{ content: 'Cast', container: '.tooltip-container' }") cast
-		i.queue.material-icons(v-tooltip="{ content: 'Queue', container: '.tooltip-container' }") queue_music
+		ma-slider(ref='slider', v-model='volume', width='100px', :bgStyle='bgStyle', :sliderStyle='sliderStyle', :processStyle='sliderStyle', :tooltip='false')
 </template>
 
 <script>
+import {
+  mapActions
+} from 'vuex';
+
 export default {
   data() {
     return {
@@ -44,31 +46,20 @@ export default {
   created() {
     // fetch the data when the view is created and the data is
     // already being observed
-    this.getCurrentPlayback();
+    setInterval(() => {
+      this.GET_CURRENT_PLAYBACK();
+    }, 3000);
   },
   watch: {
     // call again if value changes
     volume: 'setVolume',
-    $route: 'getCurrentPlayback',
   },
   methods: {
-    toArtist(type, artistID) {
-      this.$router.push({
-        path: `/${type}/${artistID}`,
-      });
-    },
+    ...mapActions(['GET_CURRENT_PLAYBACK']),
 
-    // get the current playback
-    getCurrentPlayback() {
-      this.axios({
-        method: 'get',
-        url: '/me/player',
-      }).then((res) => {
-        this.$store.commit('CURRENT_PLAYBACK', res.data);
-      }).catch((err) => {
-        this.$store.commit('CURRENT_PLAYBACK', []);
-        this.$store.commit('ADD_NOTICE', `Could not fetch your current playback, please try again later. ${err}`);
-      });
+    // to artist
+    toArtist(artistid) {
+      return `/artist/${artistid}`;
     },
 
     // go to previous track
@@ -80,9 +71,9 @@ export default {
           device_id: this.$store.state.deviceID,
         },
       }).then(() => {
-        this.getCurrentPlayback();
-      }).catch((err) => {
-        this.$store.commit('ADD_NOTICE', `Could not skip to previous track, please try again later. ${err}`);
+        this.GET_CURRENT_PLAYBACK();
+      }).catch(() => {
+        this.$store.commit('ADD_NOTICE', this.$t('errors.skipprev'));
       });
     },
 
@@ -95,9 +86,9 @@ export default {
           device_id: this.$store.state.deviceID,
         },
       }).then(() => {
-        this.getCurrentPlayback();
-      }).catch((err) => {
-        this.$store.commit('ADD_NOTICE', `Could not skip to next track, please try again later. ${err}`);
+        this.GET_CURRENT_PLAYBACK();
+      }).catch(() => {
+        this.$store.commit('ADD_NOTICE', this.$t('errors.skipnext'));
       });
     },
 
@@ -109,8 +100,10 @@ export default {
         params: {
           device_id: this.$store.state.deviceID,
         },
-      }).catch((err) => {
-        this.$store.commit('ADD_NOTICE', `Could not pause playback, please try again later. ${err}`);
+      }).then(() => {
+        this.GET_CURRENT_PLAYBACK();
+      }).catch(() => {
+        this.$store.commit('ADD_NOTICE', this.$t('errors.pauseplayback'));
       });
     },
 
@@ -122,8 +115,10 @@ export default {
         params: {
           device_id: this.$store.state.deviceID,
         },
-      }).catch((err) => {
-        this.$store.commit('ADD_NOTICE', `Could not resume playback, please try again later. ${err}`);
+      }).then(() => {
+        this.GET_CURRENT_PLAYBACK();
+      }).catch(() => {
+        this.$store.commit('ADD_NOTICE', this.$t('errors.resumeplayback'));
       });
     },
 
@@ -136,8 +131,8 @@ export default {
           state: 'context',
           device_id: this.$store.state.deviceID,
         },
-      }).catch((err) => {
-        this.$store.commit('ADD_NOTICE', `Could not toggle repeat, please try again later. ${err}`);
+      }).catch(() => {
+        this.$store.commit('ADD_NOTICE', this.$t('errors.togglerepeat'));
       });
     },
 
@@ -150,8 +145,8 @@ export default {
           state: !this.playing.shuffle_state,
           device_id: this.$store.state.deviceID,
         },
-      }).catch((err) => {
-        this.$store.commit('ADD_NOTICE', `Could not toggle shuffle, please try again later. ${err}`);
+      }).catch(() => {
+        this.$store.commit('ADD_NOTICE', this.$t('errors.toggleshuffle'));
       });
     },
 
@@ -164,9 +159,25 @@ export default {
           volume_percent: this.volume,
           device_id: this.$store.state.deviceID,
         },
-      }).catch((err) => {
-        this.$store.commit('ADD_NOTICE', `Volume could not be changed, please try again later. ${err}`);
+      }).catch(() => {
+        this.$store.commit('ADD_NOTICE', this.$t('errors.changevolume'));
       });
+    },
+
+    isPlaying() {
+      if (this.$store.state.currentPlayback.is_playing) {
+        return true;
+      }
+      return false;
+    },
+  },
+  computed: {
+    // check if playback is active
+    isPlaying() {
+      if (this.$store.state.currentPlayback.is_playing) {
+        return true;
+      }
+      return false;
     },
   },
 };
@@ -174,19 +185,19 @@ export default {
 
 <style lang="scss">
 footer {
-    display: flex;
     position: fixed;
     right: 0;
     bottom: 0;
     left: 0;
+    z-index: 998;
+    display: flex;
     align-items: center;
     padding: 15px 20px;
-    background-color: $dark-blue;
-    z-index: 999;
     border-top: 1px solid $border-color;
+    background-color: $dark-blue;
     -webkit-font-smoothing: subpixel-antialiased;
 
-    .footer {
+    .footer-container {
         display: flex;
         align-items: center;
         height: 50px;
@@ -196,9 +207,9 @@ footer {
             justify-content: flex-start;
 
             img {
-                height: 50px;
-                width: 50px;
                 margin-right: 10px;
+                width: 50px;
+                height: 50px;
                 border-radius: 3px;
                 box-shadow: $shadow;
             }
@@ -209,8 +220,8 @@ footer {
                 }
 
                 .artist-container {
-                    font-size: 0.9em;
                     font-weight: 300;
+                    font-size: 0.9em;
 
                     a {
                         color: rgba($white, 0.7);
@@ -241,14 +252,14 @@ footer {
 
         &.center {
             flex: 0.7;
+            justify-content: space-between;
             @media screen and (max-width: 955px) {
                 flex: 1;
             }
-            justify-content: space-between;
 
             .toggle {
-                font-size: 3.3em;
                 color: $white;
+                font-size: 3.3em;
                 transition: transform 0.3s;
                 &:hover {
                     transform: scale(1.15);

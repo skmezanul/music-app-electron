@@ -1,6 +1,8 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import { createVuexLoader } from 'vuex-loading';
+import mutations from './mutations';
+import actions from './actions';
 
 const VuexLoading = createVuexLoader({
   moduleName: 'loading',
@@ -16,32 +18,14 @@ Vue.use(VuexLoading);
 const store = new Vuex.Store({
   strict: true,
   state: {
-    currentPlayback: null,
+    currentPlayback: '',
     currentUser: [],
-    deviceID: null,
+    deviceID: '',
     notices: [],
-    scrollPosition: null,
+    scrollPosition: '',
   },
-  mutations: {
-    CURRENT_PLAYBACK(state, data) {
-      state.currentPlayback = data;
-    },
-    CURRENT_USER(state, data) {
-      state.currentUser = data;
-    },
-    DEVICE_ID(state, data) {
-      state.deviceID = data;
-    },
-    ADD_NOTICE(state, data) {
-      state.notices.unshift(data);
-    },
-    REMOVE_NOTICE(state, index) {
-      state.notices.splice(index, 1);
-    },
-    SCROLL_POSITION(state, position) {
-      state.scrollPosition = position;
-    },
-  },
+  mutations,
+  actions,
   plugins: [VuexLoading.Store],
 });
 

@@ -1,31 +1,34 @@
 <template lang="pug">
 .section-item(:class='type')
-	.section-item-inner(@click='toTarget(type, primaryid, secondaryid)')
+	router-link.section-item-inner(tag='div', :to='toTarget(type, primaryid, secondaryid)')
 		// overlay
-		.item-overlay(v-if="type != 'artist'")
+		.item-overlay(v-if='hasOverlay', :style='{ background: color }')
 			.overlay-inner
 				i.favorite.material-icons favorite
-				i.play.material-icons(v-if='playing == false', @click='playing = true') play_circle_filled
-				i.play.material-icons(v-if='playing == true', @click='playing = false') pause_circle_filled
+				i.play.material-icons(v-if='!playing', @click='togglePlaying') play_circle_filled
+				i.play.material-icons(v-if='playing', @click='togglePlaying') pause_circle_filled
 				i.more.material-icons more_horiz
 
 		// image
-		.image-container(v-if="image != null")
+		.image-container(v-if='image')
 			img(:src='image', :alt='title')
 
 		// meta
 		.meta-container
 			.meta-container-inner
 				span {{ title }}
-				.artist-container(v-if='artist != null')
-					a.artist(v-for='item in artist', @click='toArtist(item.type, item.id)') {{ item.name }}
+				.artist-container(v-if='artist')
+					router-link.artist(v-for='item in artist', :key='item.id', :to='toArtist(item.id)') {{ item.name }}
 </template>
 
 <script>
+import * as Vibrant from 'node-vibrant'
+
 export default {
   data() {
     return {
       playing: false,
+      color: '',
     };
   },
   props: [
@@ -36,22 +39,49 @@ export default {
     'artist',
     'image',
   ],
+  mounted() {
+    this.getColor();
+  },
   methods: {
+    // to target
     toTarget(type, primaryid, secondaryid) {
       if (type === 'playlist') {
-        this.$router.push({
-          path: `/${type}/${secondaryid}/${primaryid}`,
-        });
-      } else {
-        this.$router.push({
-          path: `/${type}/${primaryid}`,
-        });
-      }
+        return `/${type}/${secondaryid}/${primaryid}`;
+      };
+      return `/${type}/${primaryid}`;
     },
-    toArtist(type, artistID) {
-      this.$router.push({
-        path: `/${type}/${artistID}`,
+
+    // to artist
+    toArtist(artistid) {
+      return `/artist/${artistid}`;
+    },
+
+    // toggle playing state
+    togglePlaying() {
+      this.playing = !this.playing;
+    },
+
+    // get color from image
+    getColor() {
+      Vibrant.from(this.image).getPalette()
+        .then((palette) => {
+        const r = Math.round(palette.Muted._rgb[0]);
+        const g = Math.round(palette.Muted._rgb[1]);
+        const b = Math.round(palette.Muted._rgb[2]);
+        const a = 1;
+        const color = `rgba(${r}, ${g}, ${b}, ${a})`;
+        this.color = `linear-gradient(to top, ${color} 25%, rgba(80, 80, 80, 0.5) 100%)`;
+      }).catch(() => {
+        this.color = '';
       });
+    },
+  },
+  computed: {
+    hasOverlay() {
+      if (this.type === 'album' || this.type === 'playlist') {
+        return true;
+      }
+      return false;
     },
   },
 };
@@ -59,30 +89,27 @@ export default {
 
 <style lang="scss">
 .section-item {
-    padding: 7px;
-    box-sizing: border-box;
     flex: 1;
     flex-basis: 20%;
+    padding: 7px;
     max-width: 20%;
     @media screen and (max-width: 955px) {
         flex-basis: 50% !important;
         max-width: 50% !important;
     }
-    &.artist {
-      flex-basis: 25%;
-      max-width: 25%;
+    &.artist,
+    &.category {
+        flex-basis: 25%;
+        max-width: 25%;
         .section-item-inner {
-            height: 300px;
             .meta-container {
                 position: absolute;
-                bottom: 0;
                 top: 0;
-                left: 0;
                 right: 0;
-                box-sizing: border-box;
-                justify-content: center;
+                bottom: 0;
+                left: 0;
                 align-items: flex-end;
-                background: linear-gradient(to top, rgba($black,0.7), rgba($black,0));
+                justify-content: center;
                 padding-bottom: 40px;
                 height: 100%;
                 .meta-container-inner {
@@ -91,18 +118,36 @@ export default {
             }
             .image-container {
                 img {
+                    width: auto;
+                    height: 100%;
                     transition: transform 0.7s, filter 0.3s;
                     will-change: transform;
+                }
+            }
+            &:hover {
+                .image-container {
+                    img {
+                        transform: scale(1.07);
+                    }
+                }
+            }
+        }
+    }
+    &.artist {
+        .section-item-inner {
+            height: 300px;
+            .meta-container {
+                background: linear-gradient(to top, rgba($black,0.7), rgba($black,0));
+            }
+            .image-container {
+                img {
                     filter: brightness(70%) contrast(110%);
-                    height: 100%;
-                    width: auto;
                 }
             }
             &:hover {
                 .image-container {
                     img {
                         filter: brightness(100%) contrast(100%);
-                        transform: scale(1.07);
                     }
                 }
             }
@@ -116,15 +161,15 @@ export default {
         }
     }
     .section-item-inner {
-        display: flex;
-        justify-content: space-between;
-        flex-direction: column;
         position: relative;
-        background-color: $blue;
-        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
         overflow: hidden;
-        transition: box-shadow 0.3s;
+        height: 100%;
+        background-color: $blue;
         box-shadow: $shadow;
+        transition: box-shadow 0.3s;
         &:hover {
             box-shadow: $shadow-highlight;
             cursor: pointer;
@@ -134,38 +179,37 @@ export default {
         }
         .image-container {
             display: flex;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
+            overflow: hidden;
             width: 100%;
             height: auto;
-            overflow: hidden;
             img {
                 width: 100%;
                 height: auto;
             }
         }
         .item-overlay {
-            display: flex;
             position: absolute;
             top: 0;
             right: 0;
             bottom: 0;
             left: 0;
+            z-index: 1;
+            display: flex;
+            background: linear-gradient(to top, $accent-color 25%, rgba(80, 80, 80, 0.5) 100%);
             justify-content: center;
-            background: linear-gradient(to top, $accent-color 25%, rgba($blue,0.5));
             opacity: 0;
             transition: opacity 0.3s;
-            z-index: 1;
             .overlay-inner {
                 display: flex;
+                flex: 0.8;
                 align-items: center;
                 justify-content: space-around;
-                flex: 0.8;
                 i {
                     transition: color 0.3s;
-                    &:not(.play):hover {
-                        cursor: pointer;
-                        color: rgba($white, 0.7);
+                    &:not(.play) {
+                        @include item-hover;
                     }
                     &.play {
                         font-size: 4.5em;
@@ -184,9 +228,9 @@ export default {
             .meta-container-inner {
                 z-index: 2;
                 overflow: hidden;
-                white-space: nowrap;
                 text-align: center;
                 text-overflow: ellipsis;
+                white-space: nowrap;
                 line-height: 1.4em;
                 .artist-container {
                     a {

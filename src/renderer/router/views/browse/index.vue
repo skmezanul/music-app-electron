@@ -1,10 +1,11 @@
 <template lang="pug">
 main.main-container
 	// stage
-	ma-stage(type='browse', :image='$store.state.currentUser.images[0].url', :navigation='navigation', :title='welcomeMessage')
+	ma-stage(:subtitle='$t("browse")', :navigation='navigation', :image='$store.state.currentUser.images[0].url', :title='welcomeMessage')
 
 	// router view
-	router-view
+	keep-alive
+		router-view
 </template>
 
 <script>
@@ -12,23 +13,23 @@ export default {
   data() {
     return {
       navigation: [{
-        title: 'Overview',
+        title: this.$t('overview'),
         link: '',
       },
       {
-        title: 'Charts',
+        title: this.$t('charts'),
         link: 'charts',
       },
       {
-        title: 'Genres & Moods',
-        link: 'genresandmoods',
+        title: this.$tc('category', 0),
+        link: 'categories',
       },
       {
-        title: 'New Releases',
+        title: this.$t('newreleases'),
         link: 'newreleases',
       },
       {
-        title: 'Discover',
+        title: this.$t('discover'),
         link: 'discover',
       },
       ],
@@ -36,7 +37,7 @@ export default {
   },
   computed: {
     welcomeMessage() {
-      const greeting = 'Hello';
+      const greeting = this.$t('hello');
       const fullName = this.$store.state.currentUser.display_name;
       const firstName = fullName.split(' ')[0];
       return `${greeting} ${firstName}`;
