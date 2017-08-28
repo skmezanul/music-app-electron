@@ -2,8 +2,20 @@
 .page-container
 	// charts
 	ma-section(:title='$t("charts")')
+
 		ol.list
-			ma-list(v-for='(playlist, index) in charts', :key='playlist.track.id', :type='playlist.track.type', :image='playlist.track.album.images[0].url', :title='playlist.track.name', :artists='playlist.track.artists', :album='playlist.track.album', :duration='playlist.track.duration_ms', :index='index')
+			ma-list(
+        v-for='(item, index) in charts',
+        :key='item.track.id',
+        :type='item.track.type',
+        :image='item.track.album.images[0].url',
+        :title='item.track.name',
+        :trackid='item.track.id',
+        :artists='item.track.artists',
+        :album='item.track.album',
+        :explicit='item.track.explicit',
+        :duration='item.track.duration_ms',
+        :index='index')
 </template>
 
 <script>

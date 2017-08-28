@@ -1,13 +1,28 @@
 <template lang="pug">
 main.main-container
 	// stage
-	ma-stage(:subtitle='$t("library")', :title='$t("recentlyplayed")', :image='history[0].track.album.images[0].url')
+	ma-stage(
+    :subtitle='$t("library")',
+    :title='$t("recentlyplayed")',
+    :image='history[0].track.album.images[0].url')
 
 	.page-container
 		// tracks
 		ma-section(:collapsible='false')
+
 			ol.list
-				ma-list(v-for='(history, index) in history', :key='history.track.id', :type='history.track.type', :image='history.track.album.images[0].url', :title='history.track.name', :artists='history.track.artists', :album='history.track.album', :duration='history.track.duration_ms', :index='index')
+				ma-list(
+          v-for='(history, index) in history',
+          :key='history.track.id',
+          :type='history.track.type',
+          :image='history.track.album.images[0].url',
+          :title='history.track.name',
+          :trackid='history.track.id',
+          :artists='history.track.artists',
+          :album='history.track.album',
+          :explicit='history.track.explicit',
+          :duration='history.track.duration_ms',
+          :index='index')
 </template>
 
 <script>
@@ -20,11 +35,11 @@ export default {
   created() {
     // fetch the data when the view is created and the data is
     // already being observed
-    this.getRecentlyPlayed();
+    this.getHistory();
   },
   methods: {
-    // get recently played tracks from the api
-    getRecentlyPlayed() {
+    // get get this user's history from the api
+    getHistory() {
       this.$startLoading('fetching data');
       this.axios({
         method: 'get',
