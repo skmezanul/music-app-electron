@@ -8,8 +8,7 @@ main.main-container
     :title='artist.name')
 
 	// router view
-	keep-alive
-		router-view
+	router-view
 </template>
 
 <script>
@@ -19,15 +18,15 @@ export default {
       artist: [],
       navigation: [{
           title: this.$t('overview'),
-          link: '',
+          name: 'artist',
         },
         {
           title: this.$t('relatedartists'),
-          link: 'related',
+          name: 'artistRelated',
         },
         {
           title: this.$t('about'),
-          link: 'about',
+          name: 'artistAbout',
         },
       ],
     };
@@ -40,17 +39,19 @@ export default {
   methods: {
     // get artist information from the api
     getArtist() {
-      this.$startLoading('fetching data');
-      this.axios({
+      const that = this;
+
+      that.$startLoading('fetching data');
+      that.axios({
         method: 'get',
-        url: `/artists/${this.$route.params.id}`,
+        url: `/artists/${that.$route.params.id}`,
       }).then((res) => {
-        this.artist = res.data;
-        this.$endLoading('fetching data');
+        that.artist = res.data;
+        that.$endLoading('fetching data');
       }).catch(() => {
-        this.$router.go(-1);
-        this.$endLoading('fetching data');
-        this.$store.commit('ADD_NOTICE', this.$t('errors.fetchartistinfo'));
+        that.$router.go(-1);
+        that.$endLoading('fetching data');
+        that.$store.commit('ADD_NOTICE', that.$t('errors.fetchartistinfo'));
       });
     },
   },

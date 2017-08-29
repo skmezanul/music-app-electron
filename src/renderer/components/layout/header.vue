@@ -3,9 +3,9 @@ header
   .header-container
     // navigation
     .header-inner.left
-      i.material-icons(@click='goBack') keyboard_arrow_left
+      i.material-icons(@click='routerGo(-1)') keyboard_arrow_left
 
-      i.material-icons(@click='goForward') keyboard_arrow_right
+      i.material-icons(@click='routerGo(1)') keyboard_arrow_right
     // search
     .header-inner.center
       i.material-icons.search-icon search
@@ -50,21 +50,20 @@ export default {
   methods: {
     // start the search
     startSearch() {
-      if (this.searchQuery.length > 0) {
+      const query = this.searchQuery;
+      if (query.length > 0) {
         this.$router.push({
-          path: `/search/${this.searchQuery}`,
+          name: 'search',
+          params: {
+            query,
+          },
         });
-      }
+      };
     },
 
-    // go one route back
-    goBack() {
-      this.$router.go(-1);
-    },
-
-    // go one route forward
-    goForward() {
-      this.$router.go(1);
+    // go one route back or forward
+    routerGo(direction) {
+      this.$router.go(direction);
     },
 
     // toggle user dropdown
