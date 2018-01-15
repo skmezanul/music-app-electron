@@ -1,4 +1,4 @@
-# music-app-electron
+# music-app-electron [OUTDATED, use non electron version instead]
 
 > Music-Streaming app built with Electron, Webpack, Vue.js, Vuex and the Spotify api.
 
